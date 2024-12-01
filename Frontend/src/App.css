@@ -1,3 +1,4 @@
+/* Reset default styles */
 * {
   margin: 0;
   padding: 0;
@@ -5,27 +6,29 @@
 }
 
 /* Default dark mode styles */
-:root {
-  --background-color: #121212;
-  --text-color: #e0e0e0;
-  --primary-color: #bb86fc;
+.dark {
+  --background-color: #121212; /* Dark background */
+  --text-color: #e0e0e0; /* Light text for dark mode */
+  --primary-color: #bb86fc; /* Light purple for links and buttons */
 }
 
-/* Dark mode styles */
-.light-mode {
-  --background-color: #ffffff;
-  --text-color: #000000;
-  --primary-color: #6200ea;
+/* Light mode styles */
+.light {
+  --background-color: #ffffff; /* White background */
+  --text-color: #000000; /* Dark text for light mode */
+  --primary-color: #6200ea; /* Purple for links and buttons */
 }
 
 /* Global styles for the app */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme changes */
 }
 
 a {
   color: var(--primary-color);
+  transition: color 0.3s ease; /* Smooth transition for link color */
 }
 
 /* Customize Shadcn UI components if needed */
@@ -33,7 +36,29 @@ a {
   /* Add any additional customization for dark mode if necessary */
 }
 
+/* Main content area */
 main {
   margin-left: 10px; /* Ensure content does not overlap sidebar */
   padding: 20px;
+  transition: margin-left 0.3s ease, padding 0.3s ease; /* Smooth transition */
+}
+
+/* Sidebar customization if needed */
+.sidebar {
+  background-color: var(--sidebar-background);
+  color: var(--sidebar-foreground);
+  border-color: var(--sidebar-border);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.sidebar a {
+  color: var(--sidebar-primary-foreground);
+  transition: color 0.3s ease;
+}
+
+/* Specific styles for sidebar and other Shadcn components */
+.sidebar-menu-button {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

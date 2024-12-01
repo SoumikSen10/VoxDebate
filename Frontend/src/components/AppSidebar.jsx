@@ -42,21 +42,16 @@ const items = [
 
 const AppSidebar = () => {
   return (
-    <Sidebar className="bg-gray-800 text-white">
-      <SidebarContent className="bg-gray-800 text-white">
-        <SidebarGroup className="bg-gray-800">
-          <SidebarGroupLabel className="text-white">
-            Welcome User
-          </SidebarGroupLabel>
-          <SidebarGroupContent className="bg-gray-800 text-white">
+    <Sidebar>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Welcome User</SidebarGroupLabel>
+          <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a
-                      href={item.url}
-                      className="text-white hover:bg-gray-600 p-2 rounded"
-                    >
+                    <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
                     </a>
@@ -71,4 +66,4 @@ const AppSidebar = () => {
   );
 };
 
-export default AppSidebar; // Ensure the component is exported as default
+export default AppSidebar;
