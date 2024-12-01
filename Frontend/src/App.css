@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Default dark mode styles */
+:root {
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --primary-color: #bb86fc;
+}
+
+/* Dark mode styles */
+.light-mode {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #6200ea;
+}
+
+/* Global styles for the app */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--primary-color);
+}
+
+/* Customize Shadcn UI components if needed */
+.shadcn-component {
+  /* Add any additional customization for dark mode if necessary */
+}
+
+main {
+  margin-left: 10px; /* Ensure content does not overlap sidebar */
+  padding: 20px;
+}

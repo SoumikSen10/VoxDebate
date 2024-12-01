@@ -1,0 +1,16 @@
+{
+  "name": "mimic-morph-backend",
+  "version": "1.0.0",
+  "description": "Backend of our application",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "client": "npm run dev --prefix ../Frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Soumik Sen",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1"
+  }
+}
