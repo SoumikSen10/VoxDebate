@@ -5,7 +5,15 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import Titlebar from "./layouts/Titlebar";
 
-import { Hero, Login, Manual, Playground, Signup } from "./pages/index";
+import {
+  Hero,
+  Login,
+  Manual,
+  Playground,
+  Signup,
+  About,
+  Testimonials,
+} from "./pages/index";
 
 const App = () => {
   const withTitlebar = (Component) => (
@@ -24,6 +32,8 @@ const App = () => {
           <Route path="/" element={withTitlebar(Hero)} />
           <Route path="/playground" element={withTitlebar(Playground)} />
           <Route path="/manual" element={withTitlebar(Manual)} />
+          <Route path="/about" element={withTitlebar(About)} />
+          <Route path="/testimonials" element={withTitlebar(Testimonials)} />
         </Routes>
       </Layout>
     </Router>
