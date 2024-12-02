@@ -15,27 +15,27 @@ import {
 const items = [
   {
     title: "Home",
-    url: "#",
+    url: "/",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "Playground",
+    url: "/playground",
     icon: Inbox,
   },
   {
-    title: "Calendar",
-    url: "#",
+    title: "Manual",
+    url: "/manual",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
+    title: "Login",
+    url: "/login",
     icon: Search,
   },
   {
-    title: "Settings",
-    url: "#",
+    title: "Signup",
+    url: "/signup",
     icon: Settings,
   },
 ];

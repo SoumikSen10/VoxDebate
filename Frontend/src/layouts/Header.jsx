@@ -76,54 +76,34 @@ const Header = () => {
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
                   <Link
-                    to="/" // React Router uses `to` instead of `href`
+                    to="/"
                     className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
                   >
-                    {/* Uncomment and use if you have the Icons */}
-                    {/* <Icons.logo className="h-6 w-6" /> */}
-                    <div className="mb-2 mt-4 text-lg font-medium">
-                      shadcn/ui
-                    </div>
+                    <div className="mb-2 mt-4 text-lg font-medium">Explore</div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Beautifully designed components that you can copy and
-                      paste into your apps. Accessible. Customizable. Open
-                      Source.
+                      Why use Mimic Morph?
                     </p>
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
+              <ListItem href="/about" title="Introduction"></ListItem>
+              <ListItem href="/manual" title="Guide"></ListItem>
+              <ListItem href="/testimonials" title="Testimonials"></ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
+          <NavigationMenuTrigger>Pricing</NavigationMenuTrigger>
+          <NavigationMenuContent className="px-40 py-10 text-lg font-medium">
+            Coming Soon !
           </NavigationMenuContent>
         </NavigationMenuItem>
+
         <NavigationMenuItem>
-          <Link to="/docs" className={navigationMenuTriggerStyle()}>
-            <NavigationMenuLink>Documentation</NavigationMenuLink>
-          </Link>
+          <NavigationMenuTrigger>Blogs</NavigationMenuTrigger>
+          <NavigationMenuContent className="px-40 py-10 text-lg font-medium">
+            Coming Soon !
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>
