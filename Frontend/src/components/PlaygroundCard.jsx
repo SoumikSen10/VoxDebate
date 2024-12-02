@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
@@ -14,45 +14,44 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const SignupCard = () => {
+const PlaygroundCard = () => {
+  const [audioFile, setAudioFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    setAudioFile(e.target.files[0]);
+  };
+
+  const handleUpload = (e) => {
+    e.preventDefault();
+    if (!audioFile) {
+      alert("Please select an audio file to upload!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("audio", audioFile);
+
+    /* Write code for api calling */
+  };
+
   return (
     <Card className="w-[350px]" style={{ borderRadius: "15px" }}>
       <CardHeader>
-        <CardTitle>Signup</CardTitle>
+        <CardTitle>Audio Learning</CardTitle>
         {/* <CardDescription>Deploy your new project in one-click.</CardDescription> */}
       </CardHeader>
       <CardContent>
-        <form>
+        <form onSubmit={handleUpload}>
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name" className="mb-2">
-                Name
+                Upload audio
               </Label>
               <Input
-                id="name"
-                placeholder="Enter your username"
-                className="rounded-full"
-              />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="email" className="mb-2">
-                Email
-              </Label>
-              <Input
-                id="email"
-                placeholder="abc@gmail.com"
-                className="rounded-full"
-              />
-            </div>
-
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password" className="mb-2">
-                Password
-              </Label>
-              <Input
-                id="password"
-                placeholder="password"
-                className="rounded-full"
+                id="audio"
+                accept="audio/*"
+                type="file"
+                onChange={handleFileChange}
               />
             </div>
           </div>
@@ -71,12 +70,16 @@ const SignupCard = () => {
             Cancel
           </Button>
         </Link>
-        <Button variant="outline" className="bg-green-600 rounded-full">
-          Signup
+        <Button
+          variant="outline"
+          className="bg-green-600 rounded-full"
+          type="submit"
+        >
+          Learn
         </Button>
       </CardFooter>
     </Card>
   );
 };
 
-export default SignupCard;
+export default PlaygroundCard;

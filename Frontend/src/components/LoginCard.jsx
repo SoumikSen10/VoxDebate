@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const LoginCard = (props) => {
+const LoginCard = () => {
   return (
     <Card className="w-[350px]" style={{ borderRadius: "15px" }}>
       <CardHeader>
