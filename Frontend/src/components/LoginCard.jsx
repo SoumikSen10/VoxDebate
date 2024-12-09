@@ -26,11 +26,11 @@ const LoginCard = () => {
           <div className="grid w-full items-center gap-4">
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name" className="mb-2">
-                Name
+                Email
               </Label>
               <Input
-                id="name"
-                placeholder="Enter your username"
+                id="email"
+                placeholder="Enter your email"
                 className="rounded-full"
               />
             </div>
