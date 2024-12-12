@@ -5,25 +5,25 @@
 /* Base styles */
 @layer base {
   .light {
-    --sidebar-background: 0 0% 98%; /* Light mode background */
-    --sidebar-foreground: 240 5.3% 26.1%; /* Light mode text */
-    --sidebar-primary: 240 5.9% 10%; /* Primary color */
-    --sidebar-primary-foreground: 0 0% 100%; /* Text color on primary */
-    --sidebar-accent: 240 4.8% 95.9%; /* Accent color */
-    --sidebar-accent-foreground: 240 5.9% 10%; /* Accent text color */
-    --sidebar-border: 220 13% 91%; /* Border color */
-    --sidebar-ring: 217.2 91.2% 59.8%; /* Ring color */
+    --sidebar-background: 35 15% 98%; /* Soft peach background */
+    --sidebar-foreground: 35 15% 25%; /* Darker grayish text */
+    --sidebar-primary: 35 85% 45%; /* Vivid orange primary */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text on primary */
+    --sidebar-accent: 260 75% 60%; /* Soft purple accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White accent text */
+    --sidebar-border: 35 20% 90%; /* Light grayish-orange border */
+    --sidebar-ring: 35 80% 55%; /* Vibrant orange ring */
   }
 
   /* Dark mode styles */
   .dark {
-    --sidebar-background: 240 5.9% 10%; /* Dark mode background */
-    --sidebar-foreground: 240 4.8% 95.9%; /* Dark mode text */
-    --sidebar-primary: 224.3 76.3% 48%; /* Dark mode primary color */
-    --sidebar-primary-foreground: 240 3.2% 30%; /* Dark mode text color on primary */
-    --sidebar-accent: 240 3.7% 15.9%; /* Dark mode accent color */
-    --sidebar-accent-foreground: 240 4.8% 95.9%; /* Dark mode accent text color */
-    --sidebar-border: 240 3.7% 15.9%; /* Dark mode border color */
-    --sidebar-ring: 217.2 91.2% 59.8%; /* Dark mode ring color */
+    --sidebar-background: 35 15% 12%; /* Deep, dark orange-brown background */
+    --sidebar-foreground: 35 5% 85%; /* Light gray text */
+    --sidebar-primary: 35 90% 50%; /* Bright, vivid orange primary */
+    --sidebar-primary-foreground: 35 15% 10%; /* Darker text on primary */
+    --sidebar-accent: 260 40% 30%; /* Darker purple accent */
+    --sidebar-accent-foreground: 0 0% 100%; /* White accent text */
+    --sidebar-border: 35 30% 35%; /* Darker orange-brown border */
+    --sidebar-ring: 35 90% 65%; /* Brighter vibrant orange ring */
   }
 }

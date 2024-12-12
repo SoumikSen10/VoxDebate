@@ -7,23 +7,45 @@
 
 /* Default dark mode styles */
 .dark {
-  --background-color: #121212; /* Dark background */
-  --text-color: #e0e0e0; /* Light text for dark mode */
-  --primary-color: #bb86fc; /* Light purple for links and buttons */
+  --background-gradient: linear-gradient(
+    to bottom,
+    #160430,
+    #450d96
+  ); /* Dark mode gradient */
+  --text-color: #eaeaea; /* Light text for dark mode */
+  --primary-color: #ff9800; /* Bright orange for links and buttons */
+  --sidebar-background: #512d6d; /* Dark purple for sidebar background */
+  --sidebar-foreground: #ffffff; /* White text for sidebar */
+  --sidebar-border: #f57c00; /* Medium orange border */
+  --sidebar-primary-foreground: #ff9800; /* Bright orange for sidebar link color */
+  --sidebar-accent: #9c27b0; /* Purple for sidebar button accent */
+  --sidebar-accent-foreground: #ffffff; /* White text for sidebar button */
 }
 
 /* Light mode styles */
 .light {
-  --background-color: #ffffff; /* White background */
-  --text-color: #000000; /* Dark text for light mode */
-  --primary-color: #6200ea; /* Purple for links and buttons */
+  --background-gradient: linear-gradient(
+    to bottom,
+    #cfb7ff,
+    #ede8f7
+  ); /* Light mode gradient */
+  --text-color: #4a148c; /* Dark purple text for light mode */
+  --primary-color: #ff5722; /* Orange for links and buttons */
+  --sidebar-background: #f8bbd0; /* Light pinkish purple for sidebar background */
+  --sidebar-foreground: #4a148c; /* Dark purple text for sidebar */
+  --sidebar-border: #ff9800; /* Bright orange border */
+  --sidebar-primary-foreground: #ff5722; /* Orange for sidebar link color */
+  --sidebar-accent: #9c27b0; /* Purple for sidebar button accent */
+  --sidebar-accent-foreground: #ffffff; /* White text for sidebar button */
 }
 
 /* Global styles for the app */
 body {
-  background-color: var(--background-color);
+  background: var(
+    --background-gradient
+  ); /* Apply gradient to the entire body */
   color: var(--text-color);
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme changes */
+  transition: background 0.3s ease, color 0.3s ease; /* Smooth transition for theme changes */
 }
 
 a {
@@ -39,26 +61,6 @@ a {
 /* Main content area */
 main {
   margin-left: 10px; /* Ensure content does not overlap sidebar */
-  padding: 20px;
+  padding-top: 20px;
   transition: margin-left 0.3s ease, padding 0.3s ease; /* Smooth transition */
-}
-
-/* Sidebar customization if needed */
-.sidebar {
-  background-color: var(--sidebar-background);
-  color: var(--sidebar-foreground);
-  border-color: var(--sidebar-border);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.sidebar a {
-  color: var(--sidebar-primary-foreground);
-  transition: color 0.3s ease;
-}
-
-/* Specific styles for sidebar and other Shadcn components */
-.sidebar-menu-button {
-  background-color: var(--sidebar-accent);
-  color: var(--sidebar-accent-foreground);
-  transition: background-color 0.3s ease, color 0.3s ease;
 }

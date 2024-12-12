@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Home, Inbox } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,8 +10,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { NavUser } from "./NavUser";
+import { SidebarButtons } from "./SidebarButtons";
 
-// Menu items.
+// Test User data
+const user = {
+  name: "Rhitam Chaudhury",
+};
+
+// Menu items
 const items = [
   {
     title: "Home",
@@ -28,31 +35,32 @@ const items = [
     url: "/manual",
     icon: Calendar,
   },
-  {
-    title: "Login",
-    url: "/login",
-    icon: Search,
-  },
-  {
-    title: "Signup",
-    url: "/signup",
-    icon: Settings,
-  },
 ];
 
-const AppSidebar = () => {
+const AppSidebar = (props) => {
   return (
-    <Sidebar>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="bg-white bg-opacity-40 backdrop-blur-lg border-none shadow-xl rounded-r-xl rounded-l-none dark:bg-black dark:bg-opacity-60 dark:backdrop-blur-lg fixed top-0 left-0 bottom-0 z-50"
+    >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Welcome User</SidebarGroupLabel>
+          <NavUser
+            user={user}
+            className="hover:shadow-md hover:ring-2 hover:ring-gray-300 p-2 rounded-lg transition-all duration-300"
+          />
+          <SidebarGroupLabel className="mt-8">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem className="mt-1" key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
+                    <a
+                      href={item.url}
+                      className="flex items-center p-2 rounded-lg transition-all duration-300 hover:bg-gray-200 hover:text-black dark:hover:bg-gray-700 dark:hover:text-white"
+                    >
+                      <item.icon className="mr-3 transition-all duration-300" />
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
@@ -61,6 +69,10 @@ const AppSidebar = () => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        <div className="mt-6">
+          <SidebarButtons />
+        </div>
       </SidebarContent>
     </Sidebar>
   );
