@@ -1,71 +1,71 @@
-import * as React from "react";
-
-import { Link } from "react-router-dom";
-
+import React from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const LoginCard = () => {
   return (
-    <Card className="w-[350px]" style={{ borderRadius: "15px" }}>
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        {/* <CardDescription>Deploy your new project in one-click.</CardDescription> */}
-      </CardHeader>
-      <CardContent>
-        <form>
-          <div className="grid w-full items-center gap-4">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="name" className="mb-2">
-                Email
-              </Label>
-              <Input
-                id="email"
-                placeholder="Enter your email"
-                className="rounded-full"
-              />
-            </div>
+    <div className="w-[400px] space-y-6">
+      {/* Login Title */}
+      <h1 className="text-4xl font-bold text-orange-500 text-center mb-4">
+        LOG IN
+      </h1>
 
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password" className="mb-2">
-                Password
-              </Label>
-              <Input
-                id="password"
-                placeholder="password"
-                className="rounded-full"
-              />
-            </div>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-between">
-        <Link
-          to="/"
-          className="inline-block"
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-          }}
-        >
-          <Button variant="outline" className="bg-red-500 rounded-full">
-            Cancel
-          </Button>
-        </Link>
-        <Button variant="outline" className="bg-green-600 rounded-full">
-          Login
+      {/* Form */}
+      <form className="space-y-6">
+        {/* Email Field */}
+        <div className="flex flex-col">
+          <Label htmlFor="email" className="text-sm mb-2">
+            Sign in with email address
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="youname@gmail.com"
+            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+
+        {/* Password Field */}
+        <div className="flex flex-col">
+          <Label htmlFor="password" className="text-sm mb-2">
+            Your breakthrough
+          </Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="********"
+            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+
+        {/* Login Button */}
+        <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-3 font-bold">
+          Log in
         </Button>
-      </CardFooter>
-    </Card>
+      </form>
+
+      {/* Divider for Social Login */}
+      <div className="text-center text-sm text-gray-300 mt-6">
+        Or continue with
+      </div>
+
+      {/* Social Login Buttons */}
+      <div className="flex justify-center gap-4 mt-4">
+        <Button className="bg-gray-700 text-white px-6 py-2 rounded-full">
+          Google
+        </Button>
+        <Button className="bg-blue-600 text-white px-6 py-2 rounded-full">
+          Facebook
+        </Button>
+      </div>
+
+      {/* Footer */}
+      <p className="text-center text-xs text-gray-400 mt-6">
+        By registering, you agree to our{" "}
+        <span className="underline">Terms and Conditions</span>.
+      </p>
+    </div>
   );
 };
 

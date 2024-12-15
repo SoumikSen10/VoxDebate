@@ -71,7 +71,7 @@ const Header = () => {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className=" bg-white/30 backdrop-blur-md border border-white/40 shadow-lg rounded-lg">
             <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
@@ -94,14 +94,14 @@ const Header = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Pricing</NavigationMenuTrigger>
-          <NavigationMenuContent className="px-40 py-10 text-lg font-medium">
+          <NavigationMenuContent className="px-40 py-10 text-lg font-medium bg-white/30 backdrop-blur-md border border-white/40 shadow-lg rounded-lg">
             Coming Soon !
           </NavigationMenuContent>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
           <NavigationMenuTrigger>Blogs</NavigationMenuTrigger>
-          <NavigationMenuContent className="px-40 py-10 text-lg font-medium">
+          <NavigationMenuContent className="px-40 py-10 text-lg font-medium bg-white/30 backdrop-blur-md border border-white/40 shadow-lg rounded-lg">
             Coming Soon !
           </NavigationMenuContent>
         </NavigationMenuItem>

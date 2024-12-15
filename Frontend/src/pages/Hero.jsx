@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { motion } from "framer-motion";
 import waveImageDark from "../assets/waveImageDark.png";
 import waveImageLight from "../assets/waveImageLight.png";
 
@@ -36,10 +37,17 @@ const Hero = () => {
         {/* Right Section */}
         <div>
           {/* Conditionally render the image based on the current theme */}
-          <img
+          <motion.img
             src={theme === "dark" ? waveImageDark : waveImageLight}
             alt="Mimic Morph"
             className="ml-20"
+            initial={{ y: 0 }} // Initial position
+            animate={{ y: [0, -10, 0] }} // Floating animation (up and down)
+            transition={{
+              repeat: Infinity, // Repeat forever
+              duration: 2, // Duration of each cycle
+              ease: "easeInOut", // Easing function
+            }}
           />
         </div>
       </div>
