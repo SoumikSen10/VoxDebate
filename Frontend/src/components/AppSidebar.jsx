@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import { Calendar, Home, Inbox, UserPlus, LogIn } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -10,8 +10,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { NavUser } from "./NavUser";
 
-// Menu items.
+// Test User data
+const user = {
+  name: "Rhitam Chaudhury",
+};
+
+// Menu items
 const items = [
   {
     title: "Home",
@@ -31,25 +37,30 @@ const items = [
   {
     title: "Login",
     url: "/login",
-    icon: Search,
+    icon: LogIn,
   },
   {
     title: "Signup",
     url: "/signup",
-    icon: Settings,
+    icon: UserPlus,
   },
 ];
 
-const AppSidebar = () => {
+const AppSidebar = (props) => {
   return (
-    <Sidebar>
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="bg-white bg-opacity-40 backdrop-blur-lg border-none shadow-xl rounded-r-xl rounded-l-none dark:bg-black dark:bg-opacity-60 dark:backdrop-blur-lg" // Dark mode styles added
+    >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Welcome User</SidebarGroupLabel>
+          <NavUser user={user} />
+          <SidebarGroupLabel className="mt-8">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem className="mt-1" key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />
