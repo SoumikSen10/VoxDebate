@@ -25,10 +25,10 @@ const Hero = () => {
             Potential.
           </p>
           <div className="flex gap-6 justify-center mt-4">
-            <button className="bg-orange-500 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-orange-600 transition-all duration-300">
+            <button className="bg-orange-500 w-[20rem] h-[5rem] text-white px-8 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-orange-600 transition-all duration-300">
               Start Creating
             </button>
-            <button className="border border-white text-white px-8 py-3 rounded-full text-lg font-semibold bg-transparent hover:bg-white hover:text-black transition-all duration-300">
+            <button className="border border-white w-[18rem] h-[5rem] text-white px-8 py-3 rounded-full text-lg font-semibold bg-transparent hover:bg-white hover:text-black transition-all duration-300">
               Read Documentation
             </button>
           </div>
