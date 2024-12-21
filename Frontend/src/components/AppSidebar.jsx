@@ -22,50 +22,59 @@ import { NavLink, useNavigate } from "react-router-dom";
 const AppSidebar = (props) => {
   const { userInfo, setUserInfo } = useContext(UserContext);
   const [isMobile, setIsMobile] = useState(false);
+  const [profileFetched, setProfileFetched] = useState(false); // Track if profile is fetched
   const navigate = useNavigate();
 
+  // Fetch profile when userInfo changes (e.g., after login)
   useEffect(() => {
-    fetchProfile();
+    if (!userInfo || profileFetched) return; // Avoid fetching if already fetched or no userInfo
 
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/v1/users/profile",
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          setUserInfo(response.data);
+          toast.success("Profile loaded successfully!", {
+            autoClose: 2000,
+          });
+        } else {
+          setUserInfo(null);
+          toast.warn("Unable to load profile. Please log in.", {
+            autoClose: 2000,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setUserInfo(null);
+        toast.error("Failed to load profile. Please try again.", {
+          autoClose: 2000,
+        });
+      } finally {
+        setProfileFetched(true); // Set flag to prevent further fetching
+      }
+    };
+
+    fetchProfile();
+  }, [userInfo, profileFetched, setUserInfo]); // Only fetch if userInfo exists and profile hasn't been fetched yet
+
+  // Handle screen resize to determine if it's mobile
+  useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 954);
     };
 
-    handleResize();
+    handleResize(); // Run once on mount to set initial state
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [isMobile]);
-
-  const fetchProfile = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8000/api/v1/users/profile",
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.status === 200) {
-        setUserInfo(response.data);
-        toast.success("Profile loaded successfully!", {
-          autoClose: 2000,
-        });
-      } else {
-        setUserInfo(null);
-        toast.warn("Unable to load profile. Please log in.", {
-          autoClose: 2000,
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      setUserInfo(null);
-      toast.error("Failed to load profile. Please try again.", {
-        autoClose: 2000,
-      });
-    }
-  };
+  }, []);
 
   const logout = async () => {
     try {
@@ -77,12 +86,13 @@ const AppSidebar = (props) => {
         }
       );
       if (response.status === 200) {
-        setUserInfo(null);
+        setUserInfo(null); // Clear user info on logout
         toast.success("You have been logged out successfully!", {
           autoClose: 2000,
         });
+        setProfileFetched(false); // Reset profile fetch flag
         setTimeout(() => {
-          navigate("/");
+          navigate("/"); // Redirect to home after logout
         }, 2000);
       } else {
         console.error("Logout failed with status:", response.status);

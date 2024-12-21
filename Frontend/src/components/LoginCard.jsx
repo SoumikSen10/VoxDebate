@@ -52,8 +52,8 @@ const LoginCard = () => {
       const userInfo = await response.json();
       setUserInfo(userInfo);
       toast.success("Login successful! Redirecting to homepage...");
-      window.location.reload();
 
+      // Navigate to the homepage after successful login
       setTimeout(() => {
         navigate("/");
       }, 3000);
