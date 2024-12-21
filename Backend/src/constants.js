@@ -1,1 +1,1 @@
-export const DB_NAME = "mimic_morph";
+export const DB_NAME = "vox_debate";
