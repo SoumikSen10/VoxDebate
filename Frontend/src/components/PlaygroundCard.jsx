@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import WavEncoder from "wav-encoder"; // Import wav-encoder library
 
 const PlaygroundCard = () => {
-  const [response, setResponse] = useState(""); // To store the backend response
+  const [response, setResponse] = useState({ transcription: "", reply: "" }); // To store the backend response
   const [isRecording, setIsRecording] = useState(false); // Track recording status
   const [audioBlob, setAudioBlob] = useState(null); // Store the recorded audio blob
   const [error, setError] = useState("");
@@ -103,10 +103,10 @@ const PlaygroundCard = () => {
       }
 
       const data = await res.json();
-      setResponse(
-        data.data.transcription ||
-          "Response received, but no message available."
-      );
+      setResponse({
+        transcription: data.data.transcription || "No transcription available.",
+        reply: data.data.reply || "No reply available.",
+      });
       console.log("Backend Response:", data); // Debugging
     } catch (err) {
       console.error("Error submitting audio:", err);
@@ -164,10 +164,10 @@ const PlaygroundCard = () => {
       </form>
 
       <div className="mt-6 p-4 bg-[#eea047] rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold text-gray-700">User :</h3>
+        <h3 className="text-lg font-semibold text-gray-700">User:</h3>
         <textarea
           readOnly
-          value={response}
+          value={response.transcription || ""}
           className="w-full h-20 p-4 bg-[#eea047] rounded-lg border border-[#ccc] focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
         />
       </div>
@@ -176,7 +176,7 @@ const PlaygroundCard = () => {
         <h3 className="text-lg font-semibold text-gray-700">Response:</h3>
         <textarea
           readOnly
-          value="Coming soon..."
+          value={response.reply || ""}
           className="w-full h-20 p-4 bg-[#eea047] rounded-lg border border-[#ccc] focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
         />
       </div>

@@ -21,26 +21,26 @@ const debateService = asyncHandler(async (req, res) => {
     const formData = new FormData();
     formData.append("audio", fs.createReadStream(audioPath));
 
-    // Send audio to FastAPI for transcription
+    // Send audio to Flask server for transcription and Gemini response
     const response = await axios.post(
-      "http://localhost:5000/transcribe", // FastAPI server URL
+      "http://localhost:5000/transcribe", // Flask server URL
       formData,
       {
         headers: formData.getHeaders(),
       }
     );
 
-    // Assuming the FastAPI server returns the transcription result in the response
-    const transcription = response.data; // Adjust based on the actual response structure from FastAPI
+    // Extract the transcription and reply from the Flask response
+    const { transcription, reply } = response.data;
 
-    // Send the transcription result back to the client
+    // Send the transcription and reply back to the client
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          transcription,
-          "Debate Response from app successful"
+          { transcription, reply },
+          "Debate response generated successfully"
         )
       );
   } catch (error) {
@@ -52,7 +52,7 @@ const debateService = asyncHandler(async (req, res) => {
 
     return res.status(500).json({
       success: false,
-      message: "Failed to transcribe audio",
+      message: "Failed to process the audio",
       errors: errorMessage,
     });
   } finally {
