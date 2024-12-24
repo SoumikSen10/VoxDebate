@@ -3,13 +3,14 @@ import { useSelector } from "react-redux";
 import { FaMicrophoneAlt, FaStop, FaPaperPlane } from "react-icons/fa";
 import WavEncoder from "wav-encoder";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion"; // Import motion from framer-motion
+import { motion } from "framer-motion";
 
 const PlaygroundCard = () => {
   const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [liveTranscription, setLiveTranscription] = useState("");
+  const [editableTranscription, setEditableTranscription] = useState(""); // For editing
   const [error, setError] = useState("");
   const mediaRecorderRef = useRef(null);
   const speechRecognitionRef = useRef(null);
@@ -29,6 +30,7 @@ const PlaygroundCard = () => {
     setIsRecording(true);
     setError("");
     setLiveTranscription("");
+    setEditableTranscription(""); // Reset editable transcription
 
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -60,6 +62,7 @@ const PlaygroundCard = () => {
               .map((result) => result[0].transcript)
               .join("");
             setLiveTranscription(transcript);
+            setEditableTranscription(transcript); // Update editable transcription
           };
           recognition.start();
           speechRecognitionRef.current = recognition;
@@ -88,10 +91,10 @@ const PlaygroundCard = () => {
     }
 
     // Preserve live transcription
-    if (liveTranscription) {
+    if (editableTranscription) {
       setMessages((prev) => [
         ...prev,
-        { sender: "User", text: liveTranscription },
+        { sender: "User", text: editableTranscription },
       ]);
     }
   };
@@ -107,6 +110,7 @@ const PlaygroundCard = () => {
 
       const formData = new FormData();
       formData.append("audio", wavBlob, "recorded-audio.wav");
+      formData.append("transcription", editableTranscription); // Send the edited transcription
 
       const res = await fetch("http://localhost:8000/api/v1/services/debate", {
         method: "POST",
@@ -148,25 +152,21 @@ const PlaygroundCard = () => {
       setTimeout(() => {
         currentText += `${word} `;
         setMessages((prev) => {
-          // Check if the last message is already the AI's response in progress
           const updatedMessages = [...prev];
           const lastMessage = updatedMessages[updatedMessages.length - 1];
 
           if (lastMessage && lastMessage.sender === sender) {
-            // Update the last AI message with new text
             updatedMessages[updatedMessages.length - 1] = {
               sender,
               text: currentText.trim(),
             };
           } else {
-            // Add a new AI message if none exists
             updatedMessages.push({ sender, text: currentText.trim() });
           }
 
           return updatedMessages;
         });
 
-        // On the final word, ensure the full text is present
         if (index === words.length - 1) {
           setTimeout(() => {
             setMessages((prev) => {
@@ -181,9 +181,9 @@ const PlaygroundCard = () => {
               }
               return updatedMessages;
             });
-          }, 500); // Small delay to finalize the response
+          }, 500);
         }
-      }, index * 100); // Adjust typing speed
+      }, index * 100);
     });
   };
 
@@ -192,9 +192,9 @@ const PlaygroundCard = () => {
       className={`w-full max-w-[900px] h-[85vh] flex flex-col rounded-2xl shadow-lg mx-auto p-4 transition-all duration-300 ease-in-out ${
         theme === "dark" ? "bg-[#1e1e2f] text-white" : "bg-gray-100 text-black"
       }`}
-      initial={{ opacity: 0 }} // Initial state (invisible)
-      animate={{ opacity: 1 }} // Final state (fully visible)
-      transition={{ duration: 1 }} // Fade-in duration
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1 }}
     >
       <h1 className="text-3xl font-bold text-center mb-4 text-orange-500">
         Vox Debate Playground
@@ -233,9 +233,18 @@ const PlaygroundCard = () => {
         >
           {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
         </Button>
+
+        {/* Editable Transcription Field */}
+        <textarea
+          value={editableTranscription}
+          onChange={(e) => setEditableTranscription(e.target.value)}
+          className="flex-grow p-4 bg-gray-200 text-black rounded-md"
+          placeholder="Edit your transcription..."
+        />
+
         <Button
           onClick={handleUpload}
-          className="flex-grow p-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full"
+          className="flex-shrink-0 p-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full"
         >
           <FaPaperPlane />
         </Button>
