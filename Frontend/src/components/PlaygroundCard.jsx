@@ -125,6 +125,8 @@ const PlaygroundCard = () => {
 
       simulateTypingEffect(aiResponse, "AI");
       setAudioBlob(null); // Clear audio blob after submission
+      speakText(aiResponse); // Speak AI response in real-time
+      setEditableTranscription("");
     } catch (err) {
       console.error("Error submitting audio:", err);
       setError("Failed to submit audio. Please try again later.");
@@ -185,6 +187,12 @@ const PlaygroundCard = () => {
         }
       }, index * 100);
     });
+  };
+
+  const speakText = (text) => {
+    const speech = new SpeechSynthesisUtterance(text);
+    speech.lang = "en-US"; // You can set the language as needed
+    window.speechSynthesis.speak(speech);
   };
 
   return (

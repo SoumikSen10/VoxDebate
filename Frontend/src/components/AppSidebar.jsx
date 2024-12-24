@@ -108,6 +108,17 @@ const AppSidebar = (props) => {
 
   const isLoggedIn = Boolean(userInfo?.data?.username);
 
+  const handleClick = (path) => {
+    if (userInfo) {
+      navigate(path);
+    } else {
+      toast.info("Please log in to access the playground!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    }
+  };
+
   return (
     <>
       <Sidebar

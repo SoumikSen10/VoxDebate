@@ -1,13 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import waveImageDark from "../assets/waveImageDark.png";
 import waveImageLight from "../assets/waveImageLight.png";
+import { UserContext } from "../context/UserContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Hero = () => {
-  const theme = useSelector((state) => state.theme.theme);
+  const { userInfo } = useContext(UserContext);
   const navigate = useNavigate();
+
+  const theme = useSelector((state) => state.theme.theme);
 
   useEffect(() => {
     const applyTheme = () => {
@@ -27,6 +32,17 @@ const Hero = () => {
       document.body.classList.remove("light");
     };
   }, [theme]);
+
+  const handleLinkClick = (path) => {
+    if (userInfo) {
+      navigate(path);
+    } else {
+      toast.info("Please log in to access the playground!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left p-6 md:p-12 overflow-hidden bg-cover bg-no-repeat">
@@ -53,7 +69,7 @@ const Hero = () => {
               className="bg-orange-500 w-full md:w-[14rem] h-[3rem] md:h-[4rem] text-white px-6 py-3 rounded-full text-sm md:text-lg font-semibold shadow-md hover:bg-orange-600 transition-all duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/playground")}
+              onClick={() => handleLinkClick("/playground")}
             >
               Start Debating
             </motion.button>
@@ -61,7 +77,7 @@ const Hero = () => {
               className="border border-white w-full md:w-[12rem] h-[3rem] md:h-[4rem] text-white px-6 py-3 rounded-full text-sm md:text-lg font-semibold bg-transparent hover:bg-white hover:text-black transition-all duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/manual")}
+              onClick={() => handleLinkClick("/manual")}
             >
               Learn More
             </motion.button>

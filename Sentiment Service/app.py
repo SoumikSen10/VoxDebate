@@ -57,7 +57,7 @@ def get_gemini_response(question):
         
         # Adjust prompt to focus on debate and conciseness
         prompt = (
-            f"Let's debate. The response should be short and precise. Respond with direct counter-argument."
+            f"Let's debate. The response should be short and precise. Respond with direct counter-argument. Donot add words related to prompts. Make it look like a person's own response."
             f"Here is the conversation so far:\n{context}\n"
             f"User: {question}\n"
             f"AI:"
@@ -69,8 +69,16 @@ def get_gemini_response(question):
         # Generate the response
         raw_response = model.generate_content(prompt)
         
+        # Check if the response contains valid content
+        if not raw_response or not hasattr(raw_response, 'text') or not raw_response.text:
+            return "Sorry, I couldn't generate a response at the moment. Please try again later."
+        
         # Log the raw response for debugging
         print("Raw Response:", raw_response.text)
+        
+        # Suppress any safety ratings or error information
+        if hasattr(raw_response, 'safety_ratings'):
+            print("Safety Ratings detected, suppressing response.")
         
         # Filter and return the response
         ai_response = filter_response(raw_response.text)
@@ -80,7 +88,8 @@ def get_gemini_response(question):
         
         return ai_response
     except Exception as e:
-        return f"Error generating response: {str(e)}"
+        # Suppress any detailed error message and return a generic message
+        return "Sorry, there was an issue generating a response. Please try again later."
 
 # Route to handle audio file upload and transcription
 @app.route('/transcribe', methods=['POST'])
