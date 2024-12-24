@@ -14,12 +14,12 @@ const ManualSearch = () => {
   const [query, setQuery] = useState("");
 
   const faqs = [
-    "How to clone my voice?",
-    "How to adjust the tone of my voice?",
-    "Can I upload multiple voice samples?",
-    "What formats are supported for voice input?",
-    "How do I delete my saved voices?",
-    "How to reset my account settings?",
+    "How does Vox Debate work?",
+    "What is sentiment analysis in debates?",
+    "Can I choose debate topics?",
+    "How do I adjust the AI's response tone?",
+    "Can I save and review previous debates?",
+    "How do I provide feedback on AI responses?",
   ];
 
   // Filter FAQ based on the query entered
@@ -31,7 +31,7 @@ const ManualSearch = () => {
     <div className="w-full p-6 rounded-lg shadow-md mb-8">
       <Command>
         <CommandInput
-          placeholder="Search for answers to your questions..."
+          placeholder="Search for answers about Vox Debate..."
           onChange={(e) => setQuery(e.target.value)}
           className="w-full p-4 rounded-lg text-lg focus:ring-2 focus:ring-orange-500 placeholder:text-gray-500 transition-all"
         />

@@ -5,32 +5,52 @@ import { motion } from "framer-motion";
 
 const Login = () => {
   return (
-    <div className="flex h-5/6 mb-24">
+    <motion.div
+      className="flex h-5/6 mb-24 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
       {/* Hero Section with the Image */}
-      <div className="w-full flex flex-col justify-center items-center">
+      <motion.div
+        className="w-full flex flex-col justify-center items-center"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
         <motion.img
           src={LoginImage}
           alt="Floating Cubes"
           className="w-[700px] h-auto"
-          initial={{ y: 0 }} // Initial position
-          animate={{ y: [0, -10, 0] }} // Floating animation (up and down)
+          initial={{ y: 0 }}
+          animate={{ y: [0, -10, 0] }}
           transition={{
-            repeat: Infinity, // Repeat forever
-            duration: 2, // Duration of each cycle
-            ease: "easeInOut", // Easing function
+            repeat: Infinity,
+            duration: 2,
+            ease: "easeInOut",
           }}
         />
-        <p className="text-4xl font-semibold">
+        <motion.p
+          className="text-4xl font-semibold mt-2 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
           Log in to your{" "}
           <span className="text-orange-500 font-bold">ADVENTURE!</span>
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       {/* Login Form Section */}
-      <div className="w-3/5 flex justify-center items-center">
+      <motion.div
+        className="w-3/5 flex justify-center items-center"
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
         <LoginCard />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

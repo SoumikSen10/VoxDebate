@@ -1,36 +1,56 @@
 import React from "react";
 import SignupCard from "../components/SignupCard";
 import SignupImage from "../assets/SignupComp.png";
-import { motion } from "framer-motion"; // Import framer motion
+import { motion } from "framer-motion";
 
 const Signup = () => {
   return (
-    <div className="flex h-screen">
+    <motion.div
+      className="flex h-screen overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
       {/* Hero Section with the Image */}
-      <div className="w-full flex flex-col justify-center items-center">
+      <motion.div
+        className="w-full flex flex-col justify-center items-center"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
         <motion.img
           src={SignupImage}
           alt="Social Media Icons"
           className="w-[900px] h-auto"
-          initial={{ y: 0 }} // Initial position
-          animate={{ y: [0, -10, 0] }} // Floating animation (up and down)
+          initial={{ y: 0 }}
+          animate={{ y: [0, -10, 0] }}
           transition={{
-            repeat: Infinity, // Repeat forever
-            duration: 2, // Duration of each cycle
-            ease: "easeInOut", // Easing function
+            repeat: Infinity,
+            duration: 2,
+            ease: "easeInOut",
           }}
         />
-        <p className="text-4xl font-semibold">
+        <motion.p
+          className="text-4xl font-semibold mt-6 text-center"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
           Sign Up to your{" "}
           <span className="text-orange-500 font-bold">ADVENTURE!</span>
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       {/* Signup Form Section */}
-      <div className="w-3/5 flex justify-center items-center">
+      <motion.div
+        className="w-3/5 flex justify-center items-center -mt-20"
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+      >
         <SignupCard />
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

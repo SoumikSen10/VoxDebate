@@ -12,173 +12,142 @@ function ManualAccordion() {
       {" "}
       {/* Left-aligned with some margin */}
       <Accordion type="single" collapsible className="space-y-4">
-        {/* How to clone your voice */}
+        {/* How does Vox Debate work? */}
         <AccordionItem value="item-1">
           <AccordionTrigger className="text-lg font-semibold">
-            How to clone my voice?
+            How does Vox Debate work?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To clone your voice, simply follow these steps:
-              <ol className="list-decimal pl-6 space-y-2">
-                <li>
-                  Record a clear sample of your voice using the microphone.
-                </li>
-                <li>
-                  Upload the recorded audio in the "Voice Settings" section.
-                </li>
-                <li>
-                  Adjust the tone, pitch, and pace to match the desired voice.
-                </li>
-                <li>Click on "Start Cloning" to generate your cloned voice.</li>
-              </ol>
-              After the process is complete, you'll be able to use your cloned
-              voice for various features in the app!
+              Vox Debate uses cutting-edge AI and sentiment analysis to engage
+              users in debates. Simply choose a topic, start debating, and the
+              AI will respond with logical arguments based on the chosen
+              subject.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* How to adjust tone */}
+        {/* What is sentiment analysis? */}
         <AccordionItem value="item-2">
           <AccordionTrigger className="text-lg font-semibold">
-            How to adjust the tone of my voice?
+            What is sentiment analysis in debates?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To adjust the tone of your voice, navigate to the "Voice Settings"
-              tab. Here you can modify the tone, pitch, and modulation of your
-              voice. Use the sliders to experiment with different settings until
-              you achieve the desired effect.
+              Sentiment analysis helps the AI understand the emotional tone of
+              your statements. It evaluates whether your argument is positive,
+              negative, or neutral and tailors responses accordingly.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Upload multiple voice samples */}
+        {/* Choosing debate topics */}
         <AccordionItem value="item-3">
           <AccordionTrigger className="text-lg font-semibold">
-            Can I upload multiple voice samples?
+            Can I choose debate topics?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              Yes, you can upload multiple voice samples. This allows you to
-              create a more diverse range of voices by training the system with
-              different recordings. Each sample will contribute to the accuracy
-              of the voice cloning process.
+              Yes, you can choose from a variety of predefined topics or suggest
+              your own topic. The AI will adapt to the subject and engage in a
+              meaningful debate.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Supported formats */}
+        {/* Adjusting AI's tone */}
         <AccordionItem value="item-4">
           <AccordionTrigger className="text-lg font-semibold">
-            What formats are supported for voice input?
+            How do I adjust the AI's response tone?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              The following formats are supported for voice input:
-              <ul className="list-disc pl-6 space-y-2">
-                <li>MP3</li>
-                <li>WAV</li>
-                <li>OGG</li>
-                <li>FLAC</li>
-              </ul>
-              Ensure the file is clear and of high quality for the best cloning
-              results.
+              You can adjust the AI's tone from the "Settings" section. Options
+              include formal, casual, persuasive, and neutral tones to suit your
+              preference.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Deleting saved voices */}
+        {/* Saving and reviewing debates */}
         <AccordionItem value="item-5">
           <AccordionTrigger className="text-lg font-semibold">
-            How do I delete my saved voices?
+            Can I save and review previous debates?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To delete a saved voice, go to the "My Voices" section in the app,
-              select the voice you want to remove, and click on the "Delete"
-              button next to it.
+              Yes, all your debates are automatically saved in the "History"
+              section. You can review them anytime and analyze the arguments
+              presented.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Resetting account settings */}
+        {/* Providing feedback */}
         <AccordionItem value="item-6">
           <AccordionTrigger className="text-lg font-semibold">
-            How to reset my account settings?
+            How do I provide feedback on AI responses?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To reset your account settings, navigate to "Account Settings" and
-              click on the "Reset Settings" button. This will reset your
-              preferences but not your saved voices or history.
+              You can provide feedback after each debate by rating the AI's
+              responses. Your feedback helps improve the AI's performance over
+              time.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* How to change voice speed */}
+        {/* Reporting issues */}
         <AccordionItem value="item-7">
           <AccordionTrigger className="text-lg font-semibold">
-            How to change the speed of my cloned voice?
+            What should I do if the AI gives irrelevant responses?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To change the speed, go to the "Voice Settings" page and adjust
-              the speed slider. You can make the voice faster or slower based on
-              your preferences.
+              If you encounter irrelevant responses, try rephrasing your
+              argument or question. If the issue persists, report it using the
+              "Feedback" option in the app.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* How to share my cloned voice? */}
+        {/* Data security */}
         <AccordionItem value="item-8">
           <AccordionTrigger className="text-lg font-semibold">
-            How to share my cloned voice?
+            Is my debate data secure?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              Once you have generated your cloned voice, go to the "My Voices"
-              section. You will find a "Share" button next to your saved voices
-              that allows you to share them directly with others via email,
-              social media, or by generating a download link.
+              Yes, your data is securely stored and encrypted. We prioritize
+              user privacy and do not share your information with third parties.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* How to download my cloned voice? */}
+        {/* Customizing debates */}
         <AccordionItem value="item-9">
           <AccordionTrigger className="text-lg font-semibold">
-            How to download my cloned voice?
+            Can I customize debate parameters?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              To download your cloned voice, go to the "My Voices" section, find
-              the cloned voice you want to download, and click the "Download"
-              button. The file will be saved in your chosen format.
+              Absolutely! You can set parameters like debate duration, number of
+              arguments, and tone of discussion in the "Customize Debate"
+              section.
             </p>
           </AccordionContent>
         </AccordionItem>
 
-        {/* Troubleshooting voice cloning */}
+        {/* Troubleshooting */}
         <AccordionItem value="item-10">
           <AccordionTrigger className="text-lg font-semibold">
-            What should I do if my voice cloning doesn't work?
+            What should I do if the app isn't working properly?
           </AccordionTrigger>
           <AccordionContent className="text-sm">
             <p>
-              If you're having trouble, try the following steps:
-              <ol className="list-decimal pl-6 space-y-2">
-                <li>
-                  Ensure your voice recording is clear and free from background
-                  noise.
-                </li>
-                <li>Check the microphone settings on your device.</li>
-                <li>
-                  Make sure the voice sample is long enough for accurate
-                  cloning.
-                </li>
-              </ol>
-              If the issue persists, contact customer support for assistance.
+              If you experience issues, try refreshing the app or checking your
+              internet connection. For further assistance, contact support
+              through the "Help" section.
             </p>
           </AccordionContent>
         </AccordionItem>

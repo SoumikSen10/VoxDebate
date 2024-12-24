@@ -51,9 +51,6 @@ const AppSidebar = (props) => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setUserInfo(null);
-        toast.error("Failed to load profile. Please try again.", {
-          autoClose: 2000,
-        });
       } finally {
         setProfileFetched(true); // Set flag to prevent further fetching
       }
