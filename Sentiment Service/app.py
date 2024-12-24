@@ -33,35 +33,50 @@ def filter_response(response_text):
     """
     response = response_text.strip()  # Remove leading/trailing whitespace
     response = response.replace("**", "").replace("*", "")  # Remove markdown decorations
-    # Limit response length to 150 characters for conciseness
-    return response[:150]  # Adjust the length as needed
+    return response  # Do not truncate unless necessary
+
+# Function to summarize older history if it gets too long
+def summarize_history(history):
+    if len(history) > 10:
+        summarized = "Summary of earlier discussion: " + " ".join(history[:-10])
+        return [summarized] + history[-10:]
+    return history
 
 # Function to get Gemini response with context
 def get_gemini_response(question):
     global conversation_history
     try:
         # Add the user's question to the history
-        conversation_history.append(f"{question}")
+        conversation_history.append(f"User: {question}")
+        
+        # Summarize older history if needed
+        conversation_history = summarize_history(conversation_history)
         
         # Build the context from the conversation history
-        context = "\n".join(conversation_history[-10:])  # Use the last 10 exchanges to limit size
+        context = "\n".join(conversation_history)
         
         # Adjust prompt to focus on debate and conciseness
         prompt = (
-            f"Let's debate. Respond with direct counter-argument. It should be detailed like chatgpt does."
+            f"Let's debate. The response should be short and precise. Respond with direct counter-argument."
             f"Here is the conversation so far:\n{context}\n"
-            f"User's argument: {question}\n"
-            f"AI's response:"
+            f"User: {question}\n"
+            f"AI:"
         )
+        
+        # Log the context for debugging
+        print("Context sent to Gemini:", context)
         
         # Generate the response
         raw_response = model.generate_content(prompt)
-
+        
+        # Log the raw response for debugging
+        print("Raw Response:", raw_response.text)
+        
         # Filter and return the response
         ai_response = filter_response(raw_response.text)
         
         # Add the AI's response to the history
-        conversation_history.append(f"{ai_response}")
+        conversation_history.append(f"AI: {ai_response}")
         
         return ai_response
     except Exception as e:
