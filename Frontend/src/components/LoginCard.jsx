@@ -17,7 +17,8 @@ const LoginCard = () => {
 
   // Function to handle the actual login
   async function login(e) {
-    e.preventDefault();
+    // If e is not passed (for test login), we skip preventDefault
+    if (e) e.preventDefault();
 
     // Client-side validation
     if (!email || !password) {
@@ -64,10 +65,24 @@ const LoginCard = () => {
     }
   }
 
+  // Test login function with delay
+  const handleTestLogin = () => {
+    setEmail("testuser2025@gmail.com");
+    setPassword("12345678");
+  };
+
   return (
     <div className="w-full max-w-md space-y-6 px-4 sm:px-8 lg:px-12">
       {/* Login Title */}
       <h1 className="text-4xl font-bold text-orange-500 text-center">LOG IN</h1>
+
+      {/* Test Login Button */}
+      <Button
+        onClick={handleTestLogin}
+        className="w-full bg-gray-500 hover:bg-gray-600 text-white rounded-full py-3 font-bold"
+      >
+        Test Login
+      </Button>
 
       {/* Form */}
       <form className="space-y-6" onSubmit={login}>

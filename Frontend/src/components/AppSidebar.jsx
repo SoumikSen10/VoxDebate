@@ -82,6 +82,7 @@ const AppSidebar = (props) => {
           });
 
           setProfileFetched(false);
+          navigate("/");
         } else {
           toast.dismiss();
           toast.warn("Logout failed. Please try again.", { autoClose: 2000 });
@@ -112,7 +113,7 @@ const AppSidebar = (props) => {
     if (userInfo) {
       navigate(path);
     } else {
-      toast.info("Please log in to access the playground!");
+      toast.info("Please log in to access this page!");
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -145,18 +146,18 @@ const AppSidebar = (props) => {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/playground">
+                    <button onClick={() => handleClick("/playground")}>
                       <Inbox />
                       <span>Playground</span>
-                    </NavLink>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink to="/manual">
+                    <button onClick={() => handleClick("/manual")}>
                       <Calendar />
                       <span>Manual</span>
-                    </NavLink>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 {isMobile && (
