@@ -48,7 +48,7 @@ def get_gemini_response(question):
         
         # Adjust prompt to focus on debate and conciseness
         prompt = (
-            f"Let's debate. Respond with a short, direct counter-argument. Keep the response concise and avoid unnecessary details. "
+            f"Let's debate. Respond with direct counter-argument. It should be detailed like chatgpt does."
             f"Here is the conversation so far:\n{context}\n"
             f"User's argument: {question}\n"
             f"AI's response:"

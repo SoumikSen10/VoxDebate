@@ -1,44 +1,69 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { FaMicrophoneAlt, FaStop, FaPaperPlane } from "react-icons/fa";
+import WavEncoder from "wav-encoder";
 import { Button } from "@/components/ui/button";
-import { FaMicrophoneAlt, FaStop, FaTimes } from "react-icons/fa";
-import { Label } from "@/components/ui/label";
-import WavEncoder from "wav-encoder"; // Import wav-encoder library
+import { motion } from "framer-motion"; // Import motion from framer-motion
 
 const PlaygroundCard = () => {
-  const [response, setResponse] = useState({ transcription: "", reply: "" }); // To store the backend response
-  const [isRecording, setIsRecording] = useState(false); // Track recording status
-  const [audioBlob, setAudioBlob] = useState(null); // Store the recorded audio blob
+  const [messages, setMessages] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [liveTranscription, setLiveTranscription] = useState("");
   const [error, setError] = useState("");
   const mediaRecorderRef = useRef(null);
+  const speechRecognitionRef = useRef(null);
   const theme = useSelector((state) => state.theme.theme);
+  const chatContainerRef = useRef(null);
+
+  useEffect(() => {
+    chatContainerRef.current?.scrollTo(
+      0,
+      chatContainerRef.current.scrollHeight
+    );
+  }, [messages]);
 
   const startRecording = () => {
     if (isRecording) return;
 
     setIsRecording(true);
     setError("");
+    setLiveTranscription("");
 
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         const mediaRecorder = new MediaRecorder(stream, {
           mimeType: "audio/webm",
-        }); // Default type
+        });
         mediaRecorderRef.current = mediaRecorder;
 
         const chunks = [];
-        mediaRecorder.ondataavailable = (event) => {
-          chunks.push(event.data);
-        };
+        mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
 
         mediaRecorder.onstop = () => {
           const webmBlob = new Blob(chunks, { type: "audio/webm" });
           setAudioBlob(webmBlob);
-          console.log("Audio Blob:", webmBlob); // Debugging
         };
 
         mediaRecorder.start();
+
+        // Start live transcription
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.continuous = true;
+          recognition.interimResults = true;
+          recognition.onresult = (event) => {
+            const transcript = Array.from(event.results)
+              .map((result) => result[0].transcript)
+              .join("");
+            setLiveTranscription(transcript);
+          };
+          recognition.start();
+          speechRecognitionRef.current = recognition;
+        }
       })
       .catch((err) => {
         console.error("Error accessing microphone:", err);
@@ -51,16 +76,55 @@ const PlaygroundCard = () => {
     if (!isRecording || !mediaRecorderRef.current) return;
 
     setIsRecording(false);
+
+    // Stop media recorder
     mediaRecorderRef.current.stop();
+    mediaRecorderRef.current = null;
+
+    // Stop speech recognition
+    if (speechRecognitionRef.current) {
+      speechRecognitionRef.current.stop();
+      speechRecognitionRef.current = null;
+    }
+
+    // Preserve live transcription
+    if (liveTranscription) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "User", text: liveTranscription },
+      ]);
+    }
   };
 
-  const cancelRecording = () => {
-    if (!isRecording) return;
+  const handleUpload = async () => {
+    if (!audioBlob) {
+      setError("Please record audio before submitting.");
+      return;
+    }
 
-    stopRecording();
-    setAudioBlob(null);
-    setError("");
-    console.log("Recording canceled");
+    try {
+      const wavBlob = await convertWebMToWav(audioBlob);
+
+      const formData = new FormData();
+      formData.append("audio", wavBlob, "recorded-audio.wav");
+
+      const res = await fetch("http://localhost:8000/api/v1/services/debate", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+
+      const data = await res.json();
+      const aiResponse = data.data.reply || "No reply available.";
+
+      simulateTypingEffect(aiResponse, "AI");
+      setAudioBlob(null); // Clear audio blob after submission
+    } catch (err) {
+      console.error("Error submitting audio:", err);
+      setError("Failed to submit audio. Please try again later.");
+    }
   };
 
   const convertWebMToWav = async (webmBlob) => {
@@ -68,7 +132,6 @@ const PlaygroundCard = () => {
     const audioContext = new AudioContext();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-    // Convert the decoded audio data to WAV format using wav-encoder
     const wavData = await WavEncoder.encode({
       sampleRate: audioBuffer.sampleRate,
       channelData: [audioBuffer.getChannelData(0)], // Mono audio
@@ -77,118 +140,107 @@ const PlaygroundCard = () => {
     return new Blob([wavData], { type: "audio/wav" });
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    setError("");
+  const simulateTypingEffect = (fullText, sender) => {
+    const words = fullText.split(" ");
+    let currentText = "";
 
-    if (!audioBlob) {
-      setError("Please record audio before submitting.");
-      return;
-    }
+    words.forEach((word, index) => {
+      setTimeout(() => {
+        currentText += `${word} `;
+        setMessages((prev) => {
+          // Check if the last message is already the AI's response in progress
+          const updatedMessages = [...prev];
+          const lastMessage = updatedMessages[updatedMessages.length - 1];
 
-    try {
-      const wavBlob = await convertWebMToWav(audioBlob); // Convert to WAV
+          if (lastMessage && lastMessage.sender === sender) {
+            // Update the last AI message with new text
+            updatedMessages[updatedMessages.length - 1] = {
+              sender,
+              text: currentText.trim(),
+            };
+          } else {
+            // Add a new AI message if none exists
+            updatedMessages.push({ sender, text: currentText.trim() });
+          }
 
-      const formData = new FormData();
-      formData.append("audio", wavBlob, "recorded-audio.wav");
+          return updatedMessages;
+        });
 
-      const res = await fetch("http://localhost:8000/api/v1/services/debate", {
-        method: "POST",
-        body: formData,
-        credentials: "include", // Sends cookies with the request
-      });
+        // On the final word, ensure the full text is present
+        if (index === words.length - 1) {
+          setTimeout(() => {
+            setMessages((prev) => {
+              const updatedMessages = [...prev];
+              const lastMessage = updatedMessages[updatedMessages.length - 1];
 
-      if (!res.ok) {
-        throw new Error(`Error: ${res.statusText}`);
-      }
-
-      const data = await res.json();
-      setResponse({
-        transcription: data.data.transcription || "No transcription available.",
-        reply: data.data.reply || "No reply available.",
-      });
-      console.log("Backend Response:", data); // Debugging
-    } catch (err) {
-      console.error("Error submitting audio:", err);
-      setError("Failed to submit audio. Please try again later.");
-    }
+              if (lastMessage && lastMessage.sender === sender) {
+                updatedMessages[updatedMessages.length - 1] = {
+                  sender,
+                  text: fullText.trim(),
+                };
+              }
+              return updatedMessages;
+            });
+          }, 500); // Small delay to finalize the response
+        }
+      }, index * 100); // Adjust typing speed
+    });
   };
 
   return (
-    <div
-      className={`w-full max-w-[600px] space-y-6 p-10 rounded-lg shadow-lg mx-auto transition-all duration-300 ease-in-out ${
-        theme === "dark" ? "bg-[#2a1a3e]" : "bg-[#f7f7f7]"
+    <motion.div
+      className={`w-full max-w-[900px] h-[85vh] flex flex-col rounded-2xl shadow-lg mx-auto p-4 transition-all duration-300 ease-in-out ${
+        theme === "dark" ? "bg-[#1e1e2f] text-white" : "bg-gray-100 text-black"
       }`}
+      initial={{ opacity: 0 }} // Initial state (invisible)
+      animate={{ opacity: 1 }} // Final state (fully visible)
+      transition={{ duration: 1 }} // Fade-in duration
     >
-      <h1 className="text-3xl font-semibold text-center text-orange-500 mb-6">
-        Ready to clone your voice?
+      <h1 className="text-3xl font-bold text-center mb-4 text-orange-500">
+        Vox Debate Playground
       </h1>
 
-      <form onSubmit={handleUpload} className="space-y-6">
-        <div className="flex flex-col space-y-4">
-          <Label htmlFor="message" className="text-sm mb-2 text-gray-600">
-            Record your voice and send it to the server
-          </Label>
-          <div className="flex items-center space-x-4">
-            <Button
-              type="button"
-              onClick={isRecording ? stopRecording : startRecording}
-              className="bg-[#4e3b8e] text-white rounded-full p-4 hover:bg-[#6a4fbb] transition-all duration-300 ease-in-out"
+      <div
+        ref={chatContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#29293d] rounded-lg"
+      >
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              msg.sender === "User" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[75%] p-4 rounded-lg ${
+                msg.sender === "User"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-300 text-black"
+              }`}
             >
-              {isRecording ? (
-                <FaStop className="w-6 h-6" />
-              ) : (
-                <FaMicrophoneAlt className="w-6 h-6" />
-              )}
-            </Button>
-            {isRecording && (
-              <Button
-                type="button"
-                onClick={cancelRecording}
-                className="bg-red-500 text-white rounded-full p-4 hover:bg-red-600 transition-all duration-300 ease-in-out"
-              >
-                <FaTimes className="w-6 h-6" />
-              </Button>
-            )}
+              {msg.text}
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
+      <div className="flex items-center space-x-4 mt-4">
         <Button
-          type="submit"
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-3 font-semibold transition-all duration-300 ease-in-out"
+          onClick={isRecording ? stopRecording : startRecording}
+          className="flex-shrink-0 p-4 bg-purple-500 hover:bg-purple-600 text-white rounded-full"
         >
-          Send
+          {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
         </Button>
-      </form>
-
-      <div className="mt-6 p-4 bg-[#eea047] rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold text-gray-700">User:</h3>
-        <textarea
-          readOnly
-          value={response.transcription || ""}
-          className="w-full h-20 p-4 bg-[#eea047] rounded-lg border border-[#ccc] focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-        />
+        <Button
+          onClick={handleUpload}
+          className="flex-grow p-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full"
+        >
+          <FaPaperPlane />
+        </Button>
       </div>
-
-      <div className="mt-6 p-4 bg-[#eea047] rounded-lg shadow-md">
-        <h3 className="text-lg font-semibold text-gray-700">Response:</h3>
-        <textarea
-          readOnly
-          value={response.reply || ""}
-          className="w-full h-20 p-4 bg-[#eea047] rounded-lg border border-[#ccc] focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
-        />
-      </div>
-
-      <p className="text-center text-xs text-gray-500 mt-6">
-        By uploading, you agree to our{" "}
-        <span className="underline text-blue-500 cursor-pointer">
-          Terms and Conditions
-        </span>
-        .
-      </p>
-    </div>
+    </motion.div>
   );
 };
 
