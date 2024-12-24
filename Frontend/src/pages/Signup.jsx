@@ -6,22 +6,22 @@ import { motion } from "framer-motion";
 const Signup = () => {
   return (
     <motion.div
-      className="flex h-screen overflow-hidden"
+      className="flex flex-col lg:flex-row h-auto lg:h-5/6 mb-24 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
       {/* Hero Section with the Image */}
       <motion.div
-        className="w-full flex flex-col justify-center items-center"
+        className="w-full hidden lg:flex flex-col justify-center items-center"
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
       >
         <motion.img
           src={SignupImage}
-          alt="Social Media Icons"
-          className="w-[900px] h-auto"
+          alt="Signup Image"
+          className="w-[700px] h-auto"
           initial={{ y: 0 }}
           animate={{ y: [0, -10, 0] }}
           transition={{
@@ -31,7 +31,7 @@ const Signup = () => {
           }}
         />
         <motion.p
-          className="text-4xl font-semibold mt-6 text-center"
+          className="text-4xl font-semibold mt-2 text-center"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
@@ -43,7 +43,7 @@ const Signup = () => {
 
       {/* Signup Form Section */}
       <motion.div
-        className="w-3/5 flex justify-center items-center -mt-20"
+        className="w-full lg:w-3/5 flex justify-center items-center px-4 mt-24 sm:px-8"
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.4 }}

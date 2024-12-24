@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { UserContext } from "../context/UserContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -55,7 +55,8 @@ const LoginCard = () => {
 
       // Navigate to the homepage after successful login
       setTimeout(() => {
-        navigate("/");
+        navigate("/"); // Redirection
+        window.location.reload(); // Reload the page after redirection
       }, 3000);
     } catch (error) {
       console.error("Error:", error);
@@ -64,17 +65,15 @@ const LoginCard = () => {
   }
 
   return (
-    <div className="w-[400px] space-y-6">
+    <div className="w-full max-w-md space-y-6 px-4 sm:px-8 lg:px-12">
       {/* Login Title */}
-      <h1 className="text-4xl font-bold text-orange-500 text-center mb-4">
-        LOG IN
-      </h1>
+      <h1 className="text-4xl font-bold text-orange-500 text-center">LOG IN</h1>
 
       {/* Form */}
       <form className="space-y-6" onSubmit={login}>
         {/* Email Field */}
         <div className="flex flex-col">
-          <Label htmlFor="email" className="text-sm mb-2">
+          <Label htmlFor="email" className="text-sm mb-2 text-gray-300">
             Sign in with email address
           </Label>
           <Input
@@ -82,14 +81,14 @@ const LoginCard = () => {
             type="email"
             placeholder="Enter email"
             value={email}
-            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500"
+            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
         {/* Password Field */}
         <div className="flex flex-col">
-          <Label htmlFor="password" className="text-sm mb-2">
+          <Label htmlFor="password" className="text-sm mb-2 text-gray-300">
             Enter password
           </Label>
           <Input
@@ -97,7 +96,7 @@ const LoginCard = () => {
             type="password"
             value={password}
             placeholder="********"
-            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500"
+            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
@@ -112,7 +111,7 @@ const LoginCard = () => {
       </form>
 
       {/* Divider for Social Login */}
-      <div className="text-center text-sm text-gray-300 mt-6">
+      <div className="text-center text-sm text-gray-400 mt-6">
         Or continue with
       </div>
 

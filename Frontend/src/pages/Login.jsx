@@ -6,14 +6,14 @@ import { motion } from "framer-motion";
 const Login = () => {
   return (
     <motion.div
-      className="flex h-5/6 mb-24 overflow-hidden"
+      className="flex flex-col lg:flex-row h-auto lg:h-5/6 mb-24 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
       {/* Hero Section with the Image */}
       <motion.div
-        className="w-full flex flex-col justify-center items-center"
+        className="w-full hidden lg:flex flex-col justify-center items-center"
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
@@ -43,7 +43,7 @@ const Login = () => {
 
       {/* Login Form Section */}
       <motion.div
-        className="w-3/5 flex justify-center items-center"
+        className="w-full lg:w-3/5 flex justify-center items-center px-4  mt-24 sm:px-8"
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.4 }}

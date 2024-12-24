@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom"; // Correct import for react-router-dom in React + Vite
 import { cn } from "@/lib/utils";
 // import { Icons } from "@/components/icons"; // Uncomment this if you have the Icons module
@@ -66,6 +66,25 @@ const components = [
 ];
 
 const Header = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 954);
+    };
+
+    handleResize(); // Check on initial load
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  if (isMobile) {
+    return null; // Hide Header in mobile view
+  }
+
   return (
     <NavigationMenu>
       <NavigationMenuList>
@@ -81,7 +100,7 @@ const Header = () => {
                   >
                     <div className="mb-2 mt-4 text-lg font-medium">Explore</div>
                     <p className="text-sm leading-tight text-muted-foreground">
-                      Why use Mimic Morph?
+                      Why use Vox Debate?
                     </p>
                   </Link>
                 </NavigationMenuLink>

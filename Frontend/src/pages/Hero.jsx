@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import waveImageDark from "../assets/waveImageDark.png";
 import waveImageLight from "../assets/waveImageLight.png";
 
 const Hero = () => {
   const theme = useSelector((state) => state.theme.theme);
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   useEffect(() => {
     const applyTheme = () => {
@@ -29,39 +29,39 @@ const Hero = () => {
   }, [theme]);
 
   return (
-    <div className="h-screen flex items-center justify-center text-center p-8 overflow-hidden">
+    <div className="h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left p-6 md:p-12 overflow-hidden bg-cover bg-no-repeat">
       <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl">
         {/* Left Section */}
         <motion.div
-          className={`text-left md:w-1/2 ${
+          className={`text-center md:text-left md:w-1/2 ${
             theme === "light" ? "text-black" : "text-white"
           }`}
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1 }}
         >
-          <h1 className="text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight">
             ENGAGE WITH <span className="text-orange-500">AI</span>{" "}
             <span className="text-purple-500">DEBATES</span>
           </h1>
-          <p className="text-lg mb-8">
+          <p className="text-sm md:text-lg mb-6 md:mb-8">
             Challenge Perspectives, Analyze Sentiments, and Debate with
             Cutting-Edge AI.
           </p>
-          <div className="flex gap-4 justify-start mt-4">
+          <div className="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
             <motion.button
-              className="bg-orange-500 w-[14rem] h-[4rem] text-white px-6 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-orange-600 transition-all duration-300"
+              className="bg-orange-500 w-full md:w-[14rem] h-[3rem] md:h-[4rem] text-white px-6 py-3 rounded-full text-sm md:text-lg font-semibold shadow-md hover:bg-orange-600 transition-all duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/playground")} // Navigate to Playground page
+              onClick={() => navigate("/playground")}
             >
               Start Debating
             </motion.button>
             <motion.button
-              className="border border-white w-[12rem] h-[4rem] text-white px-6 py-3 rounded-full text-lg font-semibold bg-transparent hover:bg-white hover:text-black transition-all duration-300"
+              className="border border-white w-full md:w-[12rem] h-[3rem] md:h-[4rem] text-white px-6 py-3 rounded-full text-sm md:text-lg font-semibold bg-transparent hover:bg-white hover:text-black transition-all duration-300"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => navigate("/manual")} // Navigate to Manual page
+              onClick={() => navigate("/manual")}
             >
               Learn More
             </motion.button>
@@ -70,6 +70,7 @@ const Hero = () => {
 
         {/* Right Section */}
         <motion.div
+          className="mt-6 md:mt-0"
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1 }}
@@ -77,7 +78,7 @@ const Hero = () => {
           <motion.img
             src={theme === "dark" ? waveImageDark : waveImageLight}
             alt="Vox Debate"
-            className="ml-20"
+            className="lg:ml-10 w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-[1200px]"
             initial={{ y: 0 }}
             animate={{ y: [0, -10, 0] }}
             transition={{
