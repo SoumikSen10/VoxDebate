@@ -42,8 +42,13 @@ def summarize_history(history):
         return [summarized] + history[-10:]
     return history
 
+# Detect user's emotion
+def detect_emotion(audio):
+    emotion = "normal"
+    return emotion
+
 # Function to get Gemini response with context
-def get_gemini_response(question):
+def get_gemini_response(question,emotion):
     global conversation_history
     try:
         # Add the user's question to the history
@@ -57,7 +62,7 @@ def get_gemini_response(question):
         
         # Adjust prompt to focus on debate and conciseness
         prompt = (
-            f"Let's debate. The response should be short and precise. Respond with direct counter-argument. Donot add words related to prompts. Make it look like a person's own response."
+            f"Let's debate. The response should be short and precise. Respond with direct counter-argument. Donot add words related to prompts. Make it look like a person's own response. Respond based on user's emotion and currently user's emotion is {emotion}. So converse in that way."
             f"Here is the conversation so far:\n{context}\n"
             f"User: {question}\n"
             f"AI:"
@@ -71,7 +76,7 @@ def get_gemini_response(question):
         
         # Check if the response contains valid content
         if not raw_response or not hasattr(raw_response, 'text') or not raw_response.text:
-            return "Sorry, I couldn't generate a response at the moment. Please try again later."
+            return "Sorry, I couldn't generate a response at the moment on this statement. Please try again with something else."
         
         # Log the raw response for debugging
         print("Raw Response:", raw_response.text)
@@ -114,6 +119,9 @@ def transcribe_audio():
 
         # Perform speech recognition
         user_text = recognizer.recognize_google(audio_data)
+        
+        # Perform speech emotion detection
+        user_emotion = detect_emotion(audio_data)
 
         # Clean up temporary files
         os.remove(audio_file_path)
@@ -121,7 +129,7 @@ def transcribe_audio():
             os.rmdir(temp_folder)
 
         # Get AI response
-        ai_response = get_gemini_response(user_text)
+        ai_response = get_gemini_response(user_text,user_emotion)
 
         # Return transcription and AI response
         return jsonify({'transcription': user_text, 'reply': ai_response})
