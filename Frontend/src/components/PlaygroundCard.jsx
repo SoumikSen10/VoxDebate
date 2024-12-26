@@ -1,23 +1,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { FaMicrophoneAlt, FaStop, FaPaperPlane } from "react-icons/fa";
-import WavEncoder from "wav-encoder";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
 const PlaygroundCard = () => {
   const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [liveTranscription, setLiveTranscription] = useState("");
   const [editableTranscription, setEditableTranscription] = useState(""); // For editing
   const [error, setError] = useState("");
   const [isTyping, setIsTyping] = useState(false); // Typing animation
   const [typingText, setTypingText] = useState("");
-  const mediaRecorderRef = useRef(null);
-  const speechRecognitionRef = useRef(null);
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo(
@@ -26,73 +31,33 @@ const PlaygroundCard = () => {
     );
   }, [messages]);
 
+  useEffect(() => {
+    setEditableTranscription(transcript);
+  }, [transcript]);
+
   const startRecording = () => {
     if (isRecording) return;
 
+    if (!browserSupportsSpeechRecognition) {
+      setError("Your browser does not support speech recognition.");
+      return;
+    }
+
     setIsRecording(true);
     setError("");
-    setLiveTranscription("");
+    resetTranscript();
     setEditableTranscription(""); // Reset editable transcription
 
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then((stream) => {
-        const mediaRecorder = new MediaRecorder(stream, {
-          mimeType: "audio/webm",
-        });
-        mediaRecorderRef.current = mediaRecorder;
-
-        const chunks = [];
-        mediaRecorder.ondataavailable = (event) => chunks.push(event.data);
-
-        mediaRecorder.onstop = () => {
-          const webmBlob = new Blob(chunks, { type: "audio/webm" });
-          setAudioBlob(webmBlob);
-        };
-
-        mediaRecorder.start();
-
-        // Start live transcription
-        const SpeechRecognition =
-          window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-          const recognition = new SpeechRecognition();
-          recognition.continuous = true;
-          recognition.interimResults = true;
-          recognition.onresult = (event) => {
-            const transcript = Array.from(event.results)
-              .map((result) => result[0].transcript)
-              .join("");
-            setLiveTranscription(transcript);
-            setEditableTranscription(transcript);
-          };
-          recognition.start();
-          speechRecognitionRef.current = recognition;
-        }
-      })
-      .catch((err) => {
-        console.error("Error accessing microphone:", err);
-        setError("Unable to access microphone. Please check permissions.");
-        setIsRecording(false);
-      });
+    SpeechRecognition.startListening({ continuous: true });
   };
 
   const stopRecording = () => {
-    if (!isRecording || !mediaRecorderRef.current) return;
+    if (!isRecording) return;
 
     setIsRecording(false);
+    SpeechRecognition.stopListening();
 
-    // Stop media recorder
-    mediaRecorderRef.current.stop();
-    mediaRecorderRef.current = null;
-
-    // Stop speech recognition
-    if (speechRecognitionRef.current) {
-      speechRecognitionRef.current.stop();
-      speechRecognitionRef.current = null;
-    }
-
-    // Add temporary transcription message
+    // Add temporary transcription message with a unique id
     if (editableTranscription) {
       setMessages((prev) => [
         ...prev,
@@ -101,17 +66,24 @@ const PlaygroundCard = () => {
     }
   };
 
+  const speakText = (text) => {
+    if (window.speechSynthesis) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US"; // You can change the language if needed
+      window.speechSynthesis.speak(utterance);
+    } else {
+      console.error("Speech synthesis not supported in this browser.");
+    }
+  };
+
   const handleUpload = async () => {
-    if (!audioBlob) {
-      setError("Please record audio before submitting.");
+    if (!editableTranscription) {
+      setError("Please provide some text before submitting.");
       return;
     }
 
     try {
-      const wavBlob = await convertWebMToWav(audioBlob);
-
       const formData = new FormData();
-      formData.append("audio", wavBlob, "recorded-audio.wav");
       formData.append("transcription", editableTranscription);
 
       const typingPhrases = [
@@ -170,6 +142,14 @@ const PlaygroundCard = () => {
       }
       setIsTyping(false);
 
+      // Update the last user message with the final transcription
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[updatedMessages.length - 1].text =
+          editableTranscription;
+        return updatedMessages;
+      });
+
       // Fetch the AI response
       const res = await fetch("http://localhost:8000/api/v1/services/debate", {
         method: "POST",
@@ -182,13 +162,8 @@ const PlaygroundCard = () => {
       const data = await res.json();
       const aiResponse = data.data.reply || "No reply available.";
 
-      // Update the last user message with the final transcription
-      setMessages((prev) => {
-        const updatedMessages = [...prev];
-        updatedMessages[updatedMessages.length - 1].text =
-          editableTranscription;
-        return updatedMessages;
-      });
+      // Immediately read the AI response out loud
+      speakText(aiResponse);
 
       // Simulate letter-by-letter typing for the AI response
       setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
@@ -215,33 +190,12 @@ const PlaygroundCard = () => {
         }
       }, typingSpeed);
 
-      setAudioBlob(null);
-      speakText(aiResponse);
       setEditableTranscription("");
     } catch (err) {
-      console.error("Error submitting audio:", err);
-      setError("Failed to submit audio. Please try again later.");
+      console.error("Error submitting text:", err);
+      setError("Failed to submit text. Please try again later.");
       setIsTyping(false);
     }
-  };
-
-  const convertWebMToWav = async (webmBlob) => {
-    const arrayBuffer = await webmBlob.arrayBuffer();
-    const audioContext = new AudioContext();
-    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-    const wavData = await WavEncoder.encode({
-      sampleRate: audioBuffer.sampleRate,
-      channelData: [audioBuffer.getChannelData(0)], // Mono audio
-    });
-
-    return new Blob([wavData], { type: "audio/wav" });
-  };
-
-  const speakText = (text) => {
-    const speech = new SpeechSynthesisUtterance(text);
-    speech.lang = "en-US"; // You can set the language as needed
-    window.speechSynthesis.speak(speech);
   };
 
   return (
@@ -255,8 +209,7 @@ const PlaygroundCard = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1 }}
     >
-      {/* Vox Debate Playground text */}
-      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
+      <h1 className="text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
         Vox Debate Playground
       </h1>
 
@@ -300,12 +253,18 @@ const PlaygroundCard = () => {
 
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-      {/* Mobile responsive layout */}
-      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+      <div className="flex items-center space-x-4 mt-6">
+        <Button
+          onClick={isRecording ? stopRecording : startRecording}
+          className="flex-shrink-0 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
+        >
+          {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
+        </Button>
+
         <textarea
           value={editableTranscription}
           onChange={(e) => setEditableTranscription(e.target.value)}
-          className={`w-full sm:w-auto flex-grow p-4 rounded-md transition-all duration-300 ease-in-out resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+          className={`flex-grow p-4 rounded-md transition-all duration-300 ease-in-out resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
             theme === "dark"
               ? "bg-[#2b2b3d] text-white placeholder-gray-400 border-[#3c3c4d]"
               : "bg-gray-100 text-black placeholder-gray-600 border-gray-300"
@@ -314,21 +273,12 @@ const PlaygroundCard = () => {
           rows={3}
         />
 
-        <div className="flex space-x-4">
-          <Button
-            onClick={handleUpload}
-            className="p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
-          >
-            <FaPaperPlane />
-          </Button>
-
-          <Button
-            onClick={isRecording ? stopRecording : startRecording}
-            className="p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
-          >
-            {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
-          </Button>
-        </div>
+        <Button
+          onClick={handleUpload}
+          className="flex-shrink-0 p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
+        >
+          <FaPaperPlane />
+        </Button>
       </div>
     </motion.div>
   );
