@@ -256,7 +256,8 @@ const PlaygroundCard = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1 }}
     >
-      <h1 className="text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
+      {/* Vox Debate Playground text */}
+      <h1 className="text-2xl sm:text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
         Vox Debate Playground
       </h1>
 
@@ -300,18 +301,12 @@ const PlaygroundCard = () => {
 
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-      <div className="flex items-center space-x-4 mt-6">
-        <Button
-          onClick={isRecording ? stopRecording : startRecording}
-          className="flex-shrink-0 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
-        >
-          {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
-        </Button>
-
+      {/* Mobile responsive layout */}
+      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
         <textarea
           value={editableTranscription}
           onChange={(e) => setEditableTranscription(e.target.value)}
-          className={`flex-grow p-4 rounded-md transition-all duration-300 ease-in-out resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+          className={`w-full sm:w-auto flex-grow p-4 rounded-md transition-all duration-300 ease-in-out resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
             theme === "dark"
               ? "bg-[#2b2b3d] text-white placeholder-gray-400 border-[#3c3c4d]"
               : "bg-gray-100 text-black placeholder-gray-600 border-gray-300"
@@ -320,12 +315,21 @@ const PlaygroundCard = () => {
           rows={3}
         />
 
-        <Button
-          onClick={handleUpload}
-          className="flex-shrink-0 p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
-        >
-          <FaPaperPlane />
-        </Button>
+        <div className="flex space-x-4">
+          <Button
+            onClick={handleUpload}
+            className="p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
+          >
+            <FaPaperPlane />
+          </Button>
+
+          <Button
+            onClick={isRecording ? stopRecording : startRecording}
+            className="p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
+          >
+            {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
+          </Button>
+        </div>
       </div>
     </motion.div>
   );

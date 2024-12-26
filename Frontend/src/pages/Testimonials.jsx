@@ -31,13 +31,13 @@ const testimonials = [
       "As a mentor for SIH 2024, I’ve seen their collaborative skills and innovative thinking in action. Confident they’ll deliver another outstanding project.",
     image: user3,
   },
-  // Added Testimonials
+  // Updated Testimonials
   {
     id: 4,
     name: "Utsha Majumder",
     role: "Student",
     testimonial:
-      "Vox Debate is an incredible platform for anyone passionate about AI-driven debates. The seamless integration of AI and debate formats has made it a truly unique experience. It's a must-try for anyone interested in improving their debating skills with an innovative twist!",
+      "Vox Debate is an incredible platform for anyone passionate about AI-driven debates. It's a must-try for anyone interested in improving their debating skills with an innovative twist!",
     image: user4,
   },
   {
@@ -45,7 +45,7 @@ const testimonials = [
     name: "Ankush Paul",
     role: "Student",
     testimonial:
-      "I’ve never seen anything like Vox Debate before. The AI technology behind it is cutting-edge, making debates more interactive and intellectually stimulating. It’s been a great platform to engage with and learn new skills.",
+      "I’ve never seen anything like Vox Debate before. The AI technology behind it is cutting-edge, making debates more interactive and intellectually stimulating.",
     image: user5,
   },
   {
@@ -66,7 +66,11 @@ const Testimonials = () => {
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {testimonials.map((item) => (
-          <TestimonialCard key={item.id} {...item} />
+          <TestimonialCard
+            key={item.id}
+            {...item}
+            testimonialClass="max-w-[300px] mx-auto"
+          />
         ))}
       </div>
     </div>
