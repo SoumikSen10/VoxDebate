@@ -5,7 +5,7 @@ import AboutCard from "@/components/AboutCard";
 
 const About = () => {
   return (
-    <div className="mt-28 px-6 lg:px-24 grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div className="mt-20 px-6 lg:px-24 grid grid-cols-1 md:grid-cols-2 gap-12">
       <AboutCard
         name="Soumik Sen"
         designation="Full-Stack and Machine Learning Developer"

@@ -15,6 +15,9 @@ const Hero = () => {
   const theme = useSelector((state) => state.theme.theme);
 
   useEffect(() => {
+    // Prevent scrolling on body
+    document.body.style.overflow = "hidden"; // Disable scrolling while the component is mounted
+
     const applyTheme = () => {
       if (theme === "dark") {
         document.body.classList.add("dark");
@@ -30,6 +33,7 @@ const Hero = () => {
     return () => {
       document.body.classList.remove("dark");
       document.body.classList.remove("light");
+      document.body.style.overflow = "auto"; // Re-enable scrolling when component unmounts
     };
   }, [theme]);
 
@@ -45,7 +49,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left p-6 md:p-12 overflow-hidden bg-cover bg-no-repeat">
+    <div className="h-screen flex flex-col md:flex-row items-center justify-center text-center md:text-left p-6 md:p-12 overflow-hidden">
       <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-6xl">
         {/* Left Section */}
         <motion.div
@@ -96,7 +100,7 @@ const Hero = () => {
             alt="Vox Debate"
             className="lg:ml-10 w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-[1200px]"
             initial={{ y: 0 }}
-            animate={{ y: [0, -10, 0] }}
+            animate={{ y: [0, -10, 0] }} // Keep the vertical movement animation
             transition={{
               repeat: Infinity,
               duration: 2,

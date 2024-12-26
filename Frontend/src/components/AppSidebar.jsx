@@ -185,9 +185,9 @@ const AppSidebar = (props) => {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
-                        <NavLink to="/pricing">
+                        <NavLink to="/testimonials">
                           <Calendar />
-                          <span>Pricing</span>
+                          <span>Testimonials</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
