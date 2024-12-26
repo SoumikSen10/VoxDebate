@@ -92,11 +92,11 @@ const PlaygroundCard = () => {
       speechRecognitionRef.current = null;
     }
 
-    // Preserve live transcription
+    // Add temporary transcription message
     if (editableTranscription) {
       setMessages((prev) => [
         ...prev,
-        { sender: "User", text: editableTranscription },
+        { id: Date.now(), sender: "User", text: editableTranscription },
       ]);
     }
   };
@@ -182,6 +182,14 @@ const PlaygroundCard = () => {
       const data = await res.json();
       const aiResponse = data.data.reply || "No reply available.";
 
+      // Update the last user message with the final transcription
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[updatedMessages.length - 1].text =
+          editableTranscription;
+        return updatedMessages;
+      });
+
       // Simulate letter-by-letter typing for the AI response
       setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
 
@@ -215,15 +223,6 @@ const PlaygroundCard = () => {
       setError("Failed to submit audio. Please try again later.");
       setIsTyping(false);
     }
-  };
-
-  const simulateTypingEffect = (phrases, delay) => {
-    let index = 0;
-    const interval = setInterval(() => {
-      setTypingText(phrases[index]);
-      index++;
-      if (index >= phrases.length) clearInterval(interval);
-    }, delay);
   };
 
   const convertWebMToWav = async (webmBlob) => {

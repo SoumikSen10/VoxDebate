@@ -62,7 +62,7 @@ def get_gemini_response(question,emotion):
         
         # Adjust prompt to focus on debate and conciseness
         prompt = (
-            f"Let's debate. The response should be short and precise. Respond with direct counter-argument. Donot add words related to prompts. Make it look like a person's own response. Respond based on user's emotion and currently user's emotion is {emotion}. So converse in that way."
+            f"Let's debate. The response should be short and precise. Respond with direct counter-argument. Donot add words related to prompts. Make it look like a person's own response. Respond based on user's emotion and currently user's emotion is {emotion}. So converse in that way. Remove keywords like AI and user and just make it sound like human. Donot make ans too big. Should be mid sized."
             f"Here is the conversation so far:\n{context}\n"
             f"User: {question}\n"
             f"AI:"
