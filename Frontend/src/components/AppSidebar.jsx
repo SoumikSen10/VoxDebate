@@ -1,5 +1,14 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Calendar, Home, Inbox, UserPlus, LogIn } from "lucide-react";
+import {
+  House,
+  Gamepad,
+  Calendar,
+  FileText,
+  BookOpen,
+  UserPlus,
+  LogIn,
+  LogOut,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -66,7 +75,6 @@ const AppSidebar = (props) => {
     setIsLoggingOut(true); // Set loading state to true when logging out
     toast.info("Logging you out...", { autoClose: 3000 }); // Show loading toast immediately
 
-    // Delay the API call for 1-2 seconds (let's use 1 second for this example)
     setTimeout(async () => {
       try {
         const response = await axios.post(
@@ -139,7 +147,7 @@ const AppSidebar = (props) => {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <NavLink to="/">
-                      <Home />
+                      <House />
                       <span>Home</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -153,7 +161,7 @@ const AppSidebar = (props) => {
                         handleClick("/playground");
                       }}
                     >
-                      <Inbox />
+                      <Gamepad />
                       <span>Playground</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -167,7 +175,7 @@ const AppSidebar = (props) => {
                         handleClick("/manual");
                       }}
                     >
-                      <Calendar />
+                      <FileText />
                       <span>Manual</span>
                     </NavLink>
                   </SidebarMenuButton>
@@ -186,7 +194,7 @@ const AppSidebar = (props) => {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <NavLink to="/testimonials">
-                          <Calendar />
+                          <BookOpen />
                           <span>Testimonials</span>
                         </NavLink>
                       </SidebarMenuButton>
@@ -194,7 +202,7 @@ const AppSidebar = (props) => {
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild>
                         <NavLink to="/blogs">
-                          <Calendar />
+                          <BookOpen />
                           <span>Blogs</span>
                         </NavLink>
                       </SidebarMenuButton>
@@ -212,7 +220,7 @@ const AppSidebar = (props) => {
                         }}
                         className="w-full flex items-center"
                       >
-                        <LogIn />
+                        <LogOut />
                         <span>Logout</span>
                       </NavLink>
                     </SidebarMenuButton>

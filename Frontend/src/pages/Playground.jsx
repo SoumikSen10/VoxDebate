@@ -28,8 +28,8 @@ const Playground = () => {
   }, [theme]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <PlaygroundCard className="w-[500px] space-y-6" />
+    <div className="flex justify-center items-center h-screen p-4">
+      <PlaygroundCard className="w-full sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[800px] space-y-6" />
     </div>
   );
 };
