@@ -15,6 +15,7 @@ import {
   Signup,
   About,
   Testimonials,
+  Blogs,
 } from "./pages/index";
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="/manual" element={withTitlebar(Manual)} />
             <Route path="/about" element={withTitlebar(About)} />
             <Route path="/testimonials" element={withTitlebar(Testimonials)} />
+            <Route path="/blogs" element={withTitlebar(Blogs)} />
           </Routes>
         </Layout>
       </Router>

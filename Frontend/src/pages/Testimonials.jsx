@@ -56,30 +56,6 @@ const testimonials = [
       "Vox Debate is the future of debating! The AI-driven approach to handling debates and arguments makes it more efficient and exciting. I love how it adapts to various styles of debate and keeps the conversation flowing smoothly.",
     image: user1,
   },
-  {
-    id: 7,
-    name: "John Doe",
-    role: "Software Engineer",
-    testimonial:
-      "This platform has exceeded my expectations. The user experience is fantastic!",
-    image: user2,
-  },
-  {
-    id: 8,
-    name: "Jane Smith",
-    role: "Product Manager",
-    testimonial:
-      "Absolutely love the design and performance of this app. Highly recommended!",
-    image: user3,
-  },
-  {
-    id: 9,
-    name: "Alex Johnson",
-    role: "UI/UX Designer",
-    testimonial:
-      "The glassmorphism design is stunning, and the functionality is flawless!",
-    image: user4,
-  },
 ];
 
 const Testimonials = () => {

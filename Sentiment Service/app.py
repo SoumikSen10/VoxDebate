@@ -94,7 +94,7 @@ def get_gemini_response(question,emotion):
         return ai_response
     except Exception as e:
         # Suppress any detailed error message and return a generic message
-        return "Sorry, there was an issue generating a response. Please try again later."
+        return "Sorry, I couldn't generate a response at the moment on this statement. Please try again with something else."
 
 # Route to handle audio file upload and transcription
 @app.route('/transcribe', methods=['POST'])
