@@ -7,26 +7,25 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const LoginCard = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
   const { setUserInfo } = useContext(UserContext);
   const navigate = useNavigate();
 
   // Function to handle the actual login
   async function login(e) {
-    // If e is not passed (for test login), we skip preventDefault
     if (e) e.preventDefault();
 
-    // Client-side validation
     if (!email || !password) {
       toast.error("Please fill out all fields");
       return;
     }
 
-    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast.error("Please enter a valid email address");
@@ -54,10 +53,9 @@ const LoginCard = () => {
       setUserInfo(userInfo);
       toast.success("Login successful! Redirecting to homepage...");
 
-      // Navigate to the homepage after successful login
       setTimeout(() => {
-        navigate("/"); // Redirection
-        window.location.reload(); // Reload the page after redirection
+        navigate("/");
+        window.location.reload();
       }, 3000);
     } catch (error) {
       console.error("Error:", error);
@@ -65,7 +63,6 @@ const LoginCard = () => {
     }
   }
 
-  // Test login function with delay
   const handleTestLogin = () => {
     setEmail("testuser2025@gmail.com");
     setPassword("12345678");
@@ -73,18 +70,9 @@ const LoginCard = () => {
 
   return (
     <div className="w-full max-w-md space-y-6 px-4 sm:px-8 lg:px-12">
-      {/* Login Title */}
+      <ToastContainer />
       <h1 className="text-4xl font-bold text-orange-500 text-center">LOG IN</h1>
 
-      {/* Test Login Button */}
-      <Button
-        onClick={handleTestLogin}
-        className="w-full bg-gray-500 hover:bg-gray-600 text-white rounded-full py-3 font-bold"
-      >
-        Test Login
-      </Button>
-
-      {/* Form */}
       <form className="space-y-6" onSubmit={login}>
         {/* Email Field */}
         <div className="flex flex-col">
@@ -102,18 +90,31 @@ const LoginCard = () => {
         </div>
 
         {/* Password Field */}
-        <div className="flex flex-col">
+        <div className="flex flex-col relative">
           <Label htmlFor="password" className="text-sm mb-2 text-gray-300">
             Enter password
           </Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            placeholder="********"
-            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              placeholder="Enter password"
+              className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base w-full pr-12"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-orange-500"
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Login Button */}
@@ -125,24 +126,20 @@ const LoginCard = () => {
         </Button>
       </form>
 
-      {/* Divider for Social Login */}
+      {/* Test Login */}
       <div className="text-center text-sm text-gray-400 mt-6">
-        Or continue with
+        Or use the test login
       </div>
-
-      {/* Social Login Buttons */}
-      <div className="flex justify-center gap-4 mt-4">
-        <Button className="bg-gray-700 text-white px-6 py-2 rounded-full">
-          Google
-        </Button>
-        <Button className="bg-blue-600 text-white px-6 py-2 rounded-full">
-          Facebook
-        </Button>
-      </div>
+      <Button
+        onClick={handleTestLogin}
+        className="w-full bg-gray-500 hover:bg-gray-600 text-white rounded-full py-3 font-bold"
+      >
+        Test Login
+      </Button>
 
       {/* Footer */}
       <p className="text-center text-xs text-gray-400 mt-6">
-        By registering, you agree to our{" "}
+        By logging in, you agree to our{" "}
         <span className="underline">Terms and Conditions</span>.
       </p>
     </div>

@@ -12,6 +12,8 @@ const PlaygroundCard = () => {
   const [liveTranscription, setLiveTranscription] = useState("");
   const [editableTranscription, setEditableTranscription] = useState(""); // For editing
   const [error, setError] = useState("");
+  const [isTyping, setIsTyping] = useState(false); // Typing animation
+  const [typingText, setTypingText] = useState("");
   const mediaRecorderRef = useRef(null);
   const speechRecognitionRef = useRef(null);
   const theme = useSelector((state) => state.theme.theme);
@@ -62,7 +64,7 @@ const PlaygroundCard = () => {
               .map((result) => result[0].transcript)
               .join("");
             setLiveTranscription(transcript);
-            setEditableTranscription(transcript); // Update editable transcription
+            setEditableTranscription(transcript);
           };
           recognition.start();
           speechRecognitionRef.current = recognition;
@@ -110,8 +112,65 @@ const PlaygroundCard = () => {
 
       const formData = new FormData();
       formData.append("audio", wavBlob, "recorded-audio.wav");
-      formData.append("transcription", editableTranscription); // Send the edited transcription
+      formData.append("transcription", editableTranscription);
 
+      const typingPhrases = [
+        "Analyzing your argument...",
+        "Formulating a logical response...",
+        "Crafting a compelling rebuttal...",
+        "Delving into the details...",
+        "Processing your perspective...",
+        "Weighing the merits of the argument...",
+        "Constructing a solid point...",
+        "Examining potential flaws in the logic...",
+        "Assessing the counterpoints...",
+        "Strengthening my stance...",
+        "Strategizing a thoughtful reply...",
+        "Synthesizing relevant facts...",
+        "Exploring alternative viewpoints...",
+        "Reflecting on the evidence...",
+        "Gauging the validity of claims...",
+        "Identifying gaps in reasoning...",
+        "Revisiting the foundation of the debate...",
+        "Reviewing critical aspects...",
+        "Engaging with the nuances of the topic...",
+        "Clarifying complex points...",
+        "Evaluating the broader implications...",
+        "Balancing objectivity with logic...",
+        "Connecting arguments to evidence...",
+        "Focusing on critical weaknesses...",
+        "Highlighting overlooked points...",
+        "Addressing contradictory perspectives...",
+        "Preparing a concise response...",
+        "Summarizing key arguments...",
+        "Enhancing the clarity of the discussion...",
+        "Integrating diverse perspectives...",
+      ];
+
+      const shuffleArray = (array) => {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      };
+
+      const shuffledPhrases = shuffleArray(typingPhrases);
+
+      // Show typing effect
+      setIsTyping(true);
+      for (let i = 0; i < 4; i++) {
+        setTypingText(shuffledPhrases[i]);
+        chatContainerRef.current?.scrollTo(
+          0,
+          chatContainerRef.current.scrollHeight
+        ); // Ensure scrolling
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+      }
+      setIsTyping(false);
+
+      // Fetch the AI response
       const res = await fetch("http://localhost:8000/api/v1/services/debate", {
         method: "POST",
         body: formData,
@@ -123,14 +182,48 @@ const PlaygroundCard = () => {
       const data = await res.json();
       const aiResponse = data.data.reply || "No reply available.";
 
-      simulateTypingEffect(aiResponse, "AI");
-      setAudioBlob(null); // Clear audio blob after submission
-      speakText(aiResponse); // Speak AI response in real-time
+      // Simulate letter-by-letter typing for the AI response
+      setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
+
+      let index = 0;
+      const typingSpeed = 40; // Faster typing effect
+      const typingInterval = setInterval(() => {
+        if (index < aiResponse.length) {
+          setMessages((prev) => {
+            const updatedMessages = [...prev];
+            updatedMessages[updatedMessages.length - 1] = {
+              sender: "AI",
+              text: aiResponse.slice(0, index + 1),
+            };
+            return updatedMessages;
+          });
+          chatContainerRef.current?.scrollTo(
+            0,
+            chatContainerRef.current.scrollHeight
+          ); // Ensure scrolling
+          index++;
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, typingSpeed);
+
+      setAudioBlob(null);
+      speakText(aiResponse);
       setEditableTranscription("");
     } catch (err) {
       console.error("Error submitting audio:", err);
       setError("Failed to submit audio. Please try again later.");
+      setIsTyping(false);
     }
+  };
+
+  const simulateTypingEffect = (phrases, delay) => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setTypingText(phrases[index]);
+      index++;
+      if (index >= phrases.length) clearInterval(interval);
+    }, delay);
   };
 
   const convertWebMToWav = async (webmBlob) => {
@@ -146,49 +239,6 @@ const PlaygroundCard = () => {
     return new Blob([wavData], { type: "audio/wav" });
   };
 
-  const simulateTypingEffect = (fullText, sender) => {
-    const words = fullText.split(" ");
-    let currentText = "";
-
-    words.forEach((word, index) => {
-      setTimeout(() => {
-        currentText += `${word} `;
-        setMessages((prev) => {
-          const updatedMessages = [...prev];
-          const lastMessage = updatedMessages[updatedMessages.length - 1];
-
-          if (lastMessage && lastMessage.sender === sender) {
-            updatedMessages[updatedMessages.length - 1] = {
-              sender,
-              text: currentText.trim(),
-            };
-          } else {
-            updatedMessages.push({ sender, text: currentText.trim() });
-          }
-
-          return updatedMessages;
-        });
-
-        if (index === words.length - 1) {
-          setTimeout(() => {
-            setMessages((prev) => {
-              const updatedMessages = [...prev];
-              const lastMessage = updatedMessages[updatedMessages.length - 1];
-
-              if (lastMessage && lastMessage.sender === sender) {
-                updatedMessages[updatedMessages.length - 1] = {
-                  sender,
-                  text: fullText.trim(),
-                };
-              }
-              return updatedMessages;
-            });
-          }, 500);
-        }
-      }, index * 100);
-    });
-  };
-
   const speakText = (text) => {
     const speech = new SpeechSynthesisUtterance(text);
     speech.lang = "en-US"; // You can set the language as needed
@@ -197,20 +247,24 @@ const PlaygroundCard = () => {
 
   return (
     <motion.div
-      className={`w-full max-w-[900px] h-[85vh] flex flex-col rounded-2xl shadow-lg mx-auto p-4 transition-all duration-300 ease-in-out ${
-        theme === "dark" ? "bg-[#1e1e2f] text-white" : "bg-gray-100 text-black"
+      className={`w-full max-w-[900px] h-[85vh] flex flex-col rounded-2xl shadow-2xl mx-auto p-6 transition-all duration-300 ease-in-out ${
+        theme === "dark"
+          ? "bg-gradient-to-br from-[#1e1e2f] to-[#29293d] text-white"
+          : "bg-gradient-to-br from-gray-100 to-white text-black"
       }`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1 }}
     >
-      <h1 className="text-3xl font-bold text-center mb-4 text-orange-500">
+      <h1 className="text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
         Vox Debate Playground
       </h1>
 
       <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#29293d] rounded-lg"
+        className={`flex-1 overflow-y-auto p-4 space-y-4 rounded-lg bg-opacity-50 shadow-inner transition-all duration-300 ease-in-out ${
+          theme === "dark" ? "bg-[#2e2e3e]" : "bg-gray-200"
+        }`}
       >
         {messages.map((msg, index) => (
           <div
@@ -220,39 +274,55 @@ const PlaygroundCard = () => {
             }`}
           >
             <div
-              className={`max-w-[75%] p-4 rounded-lg ${
+              className={`max-w-[75%] p-4 rounded-xl shadow ${
                 msg.sender === "User"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-300 text-black"
+                  ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white"
+                  : "bg-gradient-to-br from-gray-300 to-gray-400 text-black"
               }`}
             >
               {msg.text}
             </div>
           </div>
         ))}
+
+        {/* Typing Effect */}
+        {isTyping && (
+          <motion.div
+            className="text-sm italic text-gray-500 transition-opacity duration-1000"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {typingText}
+          </motion.div>
+        )}
       </div>
 
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-      <div className="flex items-center space-x-4 mt-4">
+      <div className="flex items-center space-x-4 mt-6">
         <Button
           onClick={isRecording ? stopRecording : startRecording}
-          className="flex-shrink-0 p-4 bg-purple-500 hover:bg-purple-600 text-white rounded-full"
+          className="flex-shrink-0 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
         >
           {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
         </Button>
 
-        {/* Editable Transcription Field */}
         <textarea
           value={editableTranscription}
           onChange={(e) => setEditableTranscription(e.target.value)}
-          className="flex-grow p-4 bg-gray-200 text-black rounded-md"
-          placeholder="Edit your transcription..."
+          className={`flex-grow p-4 rounded-md transition-all duration-300 ease-in-out resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+            theme === "dark"
+              ? "bg-[#2b2b3d] text-white placeholder-gray-400 border-[#3c3c4d]"
+              : "bg-gray-100 text-black placeholder-gray-600 border-gray-300"
+          }`}
+          placeholder="Yes, we type what you say..."
+          rows={3}
         />
 
         <Button
           onClick={handleUpload}
-          className="flex-shrink-0 p-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full"
+          className="flex-shrink-0 p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
         >
           <FaPaperPlane />
         </Button>

@@ -8,11 +8,15 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const SignupCard = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State for password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password visibility
 
   const { setUserInfo } = useContext(UserContext);
   const navigate = useNavigate();
@@ -20,8 +24,13 @@ const SignupCard = () => {
   async function signup(e) {
     e.preventDefault();
 
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !confirmPassword) {
       toast.error("Please fill out all fields", { autoClose: 2000 });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match", { autoClose: 2000 });
       return;
     }
 
@@ -54,6 +63,7 @@ const SignupCard = () => {
         SIGN UP
       </h1>
       <form className="space-y-6" onSubmit={signup}>
+        {/* Username Field */}
         <div className="flex flex-col">
           <Label htmlFor="username" className="text-sm mb-2 text-gray-300">
             Choose a username
@@ -67,6 +77,8 @@ const SignupCard = () => {
             className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
           />
         </div>
+
+        {/* Email Field */}
         <div className="flex flex-col">
           <Label htmlFor="email" className="text-sm mb-2 text-gray-300">
             Enter a valid email address
@@ -80,19 +92,69 @@ const SignupCard = () => {
             className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
           />
         </div>
-        <div className="flex flex-col">
+
+        {/* Password Field */}
+        <div className="flex flex-col relative">
           <Label htmlFor="password" className="text-sm mb-2 text-gray-300">
             Enter password
           </Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            placeholder="********"
-            onChange={(e) => setPassword(e.target.value)}
-            className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              placeholder="Enter password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base w-full pr-12"
+              autoComplete="off" // Disables autofill for password field
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-orange-500"
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Confirm Password Field */}
+        <div className="flex flex-col relative">
+          <Label
+            htmlFor="confirm-password"
+            className="text-sm mb-2 text-gray-300"
+          >
+            Confirm password
+          </Label>
+          <div className="relative">
+            <Input
+              id="confirm-password"
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              placeholder="Re-enter password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="rounded-full px-4 py-3 bg-[#2a1a3e] text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 text-sm md:text-base w-full pr-12"
+              autoComplete="off" // Disables autofill for confirm password field
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute inset-y-0 right-4 flex items-center text-gray-400 hover:text-orange-500"
+            >
+              {showConfirmPassword ? (
+                <EyeSlashIcon className="h-5 w-5" />
+              ) : (
+                <EyeIcon className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Signup Button */}
         <Button
           type="submit"
           className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-full py-3 font-bold"
@@ -100,21 +162,6 @@ const SignupCard = () => {
           Sign up
         </Button>
       </form>
-
-      {/* Divider for Social Login */}
-      <div className="text-center text-sm text-gray-400 mt-6">
-        Or continue with
-      </div>
-
-      {/* Social Login Buttons */}
-      <div className="flex justify-center gap-4 mt-4">
-        <Button className="bg-gray-700 text-white px-6 py-2 rounded-full">
-          Google
-        </Button>
-        <Button className="bg-blue-600 text-white px-6 py-2 rounded-full">
-          Facebook
-        </Button>
-      </div>
 
       {/* Footer */}
       <p className="text-center text-xs text-gray-400 mt-6">

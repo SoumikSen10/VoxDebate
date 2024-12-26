@@ -146,20 +146,33 @@ const AppSidebar = (props) => {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <button onClick={() => handleClick("/playground")}>
+                    <NavLink
+                      to="/playground"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleClick("/playground");
+                      }}
+                    >
                       <Inbox />
                       <span>Playground</span>
-                    </button>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <button onClick={() => handleClick("/manual")}>
+                    <NavLink
+                      to="/manual"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleClick("/manual");
+                      }}
+                    >
                       <Calendar />
                       <span>Manual</span>
-                    </button>
+                    </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+
                 {isMobile && (
                   <>
                     <SidebarMenuItem>
@@ -191,13 +204,17 @@ const AppSidebar = (props) => {
                 {isLoggedIn ? (
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                      <button
-                        onClick={() => setShowLogoutConfirmation(true)} // Trigger the confirmation modal
+                      <NavLink
+                        to="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowLogoutConfirmation(true);
+                        }}
                         className="w-full flex items-center"
                       >
                         <LogIn />
                         <span>Logout</span>
-                      </button>
+                      </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ) : (
