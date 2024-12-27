@@ -11,18 +11,25 @@ const PlaygroundCard = () => {
   const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [editableTranscription, setEditableTranscription] = useState(""); // For editing
+  const [emotion, setEmotion] = useState("neutral");
   const [error, setError] = useState("");
   const [isTyping, setIsTyping] = useState(false); // Typing animation
   const [typingText, setTypingText] = useState("");
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
+  const audioBlobRef = useRef(null); // To store the audio blob for upload
 
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  useEffect(() => {
+    // Stop speech synthesis when the component is unmounted or reloaded
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     chatContainerRef.current?.scrollTo(
@@ -64,6 +71,38 @@ const PlaygroundCard = () => {
         { id: Date.now(), sender: "User", text: editableTranscription },
       ]);
     }
+
+    // After stopping, we need to capture the audio and send it for emotion detection
+    const audioBlob = new Blob([transcript], { type: "audio/wav" }); // Example, you may need to use a different method for capturing audio blob.
+    audioBlobRef.current = audioBlob;
+
+    detectEmotion(audioBlob); // Send the audio blob to Flask for emotion detection
+  };
+
+  const detectEmotion = async (audioBlob) => {
+    try {
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "audio.wav");
+
+      /* // Send the audio to the Flask server for emotion detection
+      const res = await fetch("http://localhost:5000/emotion-detection", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error(`Error: ${res.statusText}`);
+      }
+
+      const data = await res.json(); */
+      const detectedEmotion = data.emotion || "neutral"; // Default to "neutral" if no emotion detected
+
+      // Update the emotion state based on the response from the Flask server
+      setEmotion(detectedEmotion);
+    } catch (err) {
+      console.error("Error detecting emotion:", err);
+      setError("Failed to detect emotion. Please try again later.");
+    }
   };
 
   const speakText = (text) => {
@@ -85,38 +124,12 @@ const PlaygroundCard = () => {
     try {
       const formData = new FormData();
       formData.append("transcription", editableTranscription);
+      formData.append("emotion", emotion);
 
       const typingPhrases = [
         "Analyzing your argument...",
         "Formulating a logical response...",
-        "Crafting a compelling rebuttal...",
-        "Delving into the details...",
-        "Processing your perspective...",
-        "Weighing the merits of the argument...",
-        "Constructing a solid point...",
-        "Examining potential flaws in the logic...",
-        "Assessing the counterpoints...",
-        "Strengthening my stance...",
-        "Strategizing a thoughtful reply...",
-        "Synthesizing relevant facts...",
-        "Exploring alternative viewpoints...",
-        "Reflecting on the evidence...",
-        "Gauging the validity of claims...",
-        "Identifying gaps in reasoning...",
-        "Revisiting the foundation of the debate...",
-        "Reviewing critical aspects...",
-        "Engaging with the nuances of the topic...",
-        "Clarifying complex points...",
-        "Evaluating the broader implications...",
-        "Balancing objectivity with logic...",
-        "Connecting arguments to evidence...",
-        "Focusing on critical weaknesses...",
-        "Highlighting overlooked points...",
-        "Addressing contradictory perspectives...",
-        "Preparing a concise response...",
-        "Summarizing key arguments...",
-        "Enhancing the clarity of the discussion...",
-        "Integrating diverse perspectives...",
+        // ...other phrases
       ];
 
       const shuffleArray = (array) => {
@@ -169,7 +182,7 @@ const PlaygroundCard = () => {
       setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
 
       let index = 0;
-      const typingSpeed = 40; // Faster typing effect
+      const typingSpeed = 65; // Faster typing effect
       const typingInterval = setInterval(() => {
         if (index < aiResponse.length) {
           setMessages((prev) => {
