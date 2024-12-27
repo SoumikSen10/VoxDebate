@@ -84,7 +84,7 @@ const PlaygroundCard = () => {
       const formData = new FormData();
       formData.append("audio", audioBlob, "audio.wav");
 
-      /* // Send the audio to the Flask server for emotion detection
+      // Send the audio to the Flask server for emotion detection
       const res = await fetch("http://localhost:5000/emotion-detection", {
         method: "POST",
         body: formData,
@@ -94,7 +94,7 @@ const PlaygroundCard = () => {
         throw new Error(`Error: ${res.statusText}`);
       }
 
-      const data = await res.json(); */
+      const data = await res.json();
       const detectedEmotion = data.emotion || "neutral"; // Default to "neutral" if no emotion detected
 
       // Update the emotion state based on the response from the Flask server

@@ -1,11 +1,12 @@
 from flask import Flask, request, jsonify
-from emotion_recognition import detect_emotion  # Example function for emotion detection
+from flask_cors import CORS
+from emotion_recognition import detect_emotion
+import os
 
 app = Flask(__name__)
 
-def detect_emotion(audio):
-    # Function to detect emotion from audio file using dl model's h5 file
-    return 'neutral'
+# Enable CORS for all routes
+CORS(app)
 
 @app.route('/emotion-detection', methods=['POST'])
 def emotion_detection():
@@ -13,10 +14,19 @@ def emotion_detection():
         return jsonify({'error': 'No audio file provided'}), 400
 
     audio_file = request.files['audio']
-    # Assuming emotion_recognition.detect_emotion takes the audio file and returns an emotion
-    emotion = detect_emotion(audio_file)
-    
-    return jsonify({'emotion': emotion})
+    try:
+        emotion = detect_emotion(audio_file)
+        return jsonify({'emotion': emotion})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 if __name__ == '__main__':
+    # Set environment variables to reduce TensorFlow logs and warnings
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TensorFlow logs
+    os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'  # Disable oneDNN custom operations for compatibility
+
     app.run(debug=True)
