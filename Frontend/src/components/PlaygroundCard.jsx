@@ -15,11 +15,8 @@ const PlaygroundCard = () => {
   const [error, setError] = useState("");
   const [isTyping, setIsTyping] = useState(false); // Typing animation
   const [typingText, setTypingText] = useState("");
-  const [isEmotionDetecting, setIsEmotionDetecting] = useState(false); // To track emotion detection status
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
-  const audioChunksRef = useRef([]); // To store the audio chunks for recording
-  const mediaRecorderRef = useRef(null); // To manage the recorder
 
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
@@ -59,39 +56,10 @@ const PlaygroundCard = () => {
 
     // Start speech recognition
     SpeechRecognition.startListening({ continuous: true });
-
-    // MediaRecorder setup to capture audio
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-
-      // Collect audio data chunks when available
-      audioChunksRef.current = [];
-      recorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      // Once recording stops, send the audio data for emotion detection
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/wav",
-        });
-        await detectEmotion(audioBlob);
-      };
-
-      recorder.start(); // Start the recording
-      mediaRecorderRef.current = recorder;
-    } catch (err) {
-      console.error("Error accessing the microphone:", err);
-      setError("Failed to access microphone. Please allow microphone access.");
-    }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop(); // Stop the MediaRecorder
-      setIsRecording(false);
-    }
+    setIsRecording(false);
     SpeechRecognition.stopListening(); // Stop speech recognition
 
     // Add temporary transcription message with a unique id
@@ -100,36 +68,6 @@ const PlaygroundCard = () => {
         ...prev,
         { id: Date.now(), sender: "User", text: editableTranscription },
       ]);
-    }
-  };
-
-  const detectEmotion = async (audioBlob) => {
-    setIsEmotionDetecting(true); // Start emotion detection
-
-    try {
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "audio.wav");
-
-      // Send the audio to the Flask server for emotion detection
-      const res = await fetch("http://localhost:5000/emotion-detection", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error(`Error: ${res.statusText}`);
-      }
-
-      const data = await res.json();
-      const detectedEmotion = data.emotion || "neutral"; // Default to "neutral" if no emotion detected
-
-      // Update the emotion state based on the response from the Flask server
-      setEmotion(detectedEmotion);
-      setIsEmotionDetecting(false); // Stop emotion detection
-    } catch (err) {
-      console.error("Error detecting emotion:", err);
-      setError("Failed to detect emotion. Please try again later.");
-      setIsEmotionDetecting(false); // Stop emotion detection in case of error
     }
   };
 
@@ -150,9 +88,33 @@ const PlaygroundCard = () => {
     }
 
     try {
+      // Step 1: Detect emotion by sending the transcription to the Flask server
+      const emotionRes = await fetch(
+        "http://localhost:5000/emotion-detection",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ transcription: editableTranscription }),
+        }
+      );
+
+      let detectedEmotion = "neutral"; // Default to neutral
+
+      if (emotionRes.ok) {
+        const emotionData = await emotionRes.json();
+        detectedEmotion = emotionData.emotion || "neutral";
+      } else {
+        console.warn("Emotion API response error: Defaulting to neutral.");
+      }
+
+      setEmotion(detectedEmotion);
+
+      // Step 2: Send the transcription and detected emotion to the Node.js server
       const formData = new FormData();
       formData.append("transcription", editableTranscription);
-      formData.append("emotion", emotion);
+      formData.append("emotion", detectedEmotion);
 
       const typingPhrases = [
         "Analyzing your argument...",
@@ -191,7 +153,7 @@ const PlaygroundCard = () => {
 
       // Show typing effect
       setIsTyping(true);
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 3; i++) {
         setTypingText(shuffledPhrases[i]);
         chatContainerRef.current?.scrollTo(
           0,
@@ -210,16 +172,19 @@ const PlaygroundCard = () => {
       });
 
       // Fetch the AI response
-      const res = await fetch("http://localhost:8000/api/v1/services/debate", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
-      });
+      const debateRes = await fetch(
+        "http://localhost:8000/api/v1/services/debate",
+        {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        }
+      );
 
-      if (!res.ok) throw new Error(`Error: ${res.statusText}`);
+      if (!debateRes.ok) throw new Error(`Error: ${debateRes.statusText}`);
 
-      const data = await res.json();
-      const aiResponse = data.data.reply || "No reply available.";
+      const debateData = await debateRes.json();
+      const aiResponse = debateData.data.reply || "No reply available.";
 
       // Immediately read the AI response out loud
       speakText(aiResponse);
@@ -336,13 +301,6 @@ const PlaygroundCard = () => {
           }`}
         >
           <p>Detected Emotion: {emotion}</p>
-        </div>
-      )}
-
-      {/* Emotion detection loading */}
-      {isEmotionDetecting && (
-        <div className="text-center text-lg text-gray-500 mt-2">
-          Detecting emotion...
         </div>
       )}
 

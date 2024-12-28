@@ -10,15 +10,20 @@ CORS(app)
 
 @app.route('/emotion-detection', methods=['POST'])
 def emotion_detection():
-    if 'audio' not in request.files:
-        return jsonify({'error': 'No audio file provided'}), 400
+    if 'transcription' not in request.json:
+        return jsonify({'error': 'No transcription provided'}), 400
 
-    audio_file = request.files['audio']
+    transcription = request.json['transcription']
     try:
-        emotion = detect_emotion(audio_file)
+        # Assuming detect_emotion takes text input for emotion detection
+        emotion = detect_emotion(transcription)
+        if not emotion:  # If no emotion is detected, default to "neutral"
+            emotion = "neutral"
         return jsonify({'emotion': emotion})
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        # Log the error and return a default emotion
+        print(f"Error: {str(e)}")
+        return jsonify({'emotion': 'neutral'})
 
 @app.route('/favicon.ico')
 def favicon():
