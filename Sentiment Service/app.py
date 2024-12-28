@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from emotion_recognition import detect_emotion
 import os
+from emotion_recognition import detect_emotion
 
 app = Flask(__name__)
 
@@ -10,15 +10,14 @@ CORS(app)
 
 @app.route('/emotion-detection', methods=['POST'])
 def emotion_detection():
+    # Check if 'transcription' is in the request
     if 'transcription' not in request.json:
         return jsonify({'error': 'No transcription provided'}), 400
 
-    transcription = request.json['transcription']
+    transcription = request.json['transcription']  # Get the transcription text from the request
     try:
-        # Assuming detect_emotion takes text input for emotion detection
+        # Get the emotion using the detect_emotion function
         emotion = detect_emotion(transcription)
-        if not emotion:  # If no emotion is detected, default to "neutral"
-            emotion = "neutral"
         return jsonify({'emotion': emotion})
     except Exception as e:
         # Log the error and return a default emotion
