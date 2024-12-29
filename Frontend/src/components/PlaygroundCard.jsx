@@ -10,11 +10,9 @@ import SpeechRecognition, {
 const PlaygroundCard = () => {
   const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [editableTranscription, setEditableTranscription] = useState(""); // For editing
-  const [emotion, setEmotion] = useState("neutral");
+  const [editableTranscription, setEditableTranscription] = useState("");
+  const [emotion, setEmotion] = useState("");
   const [error, setError] = useState("");
-  const [isTyping, setIsTyping] = useState(false); // Typing animation
-  const [typingText, setTypingText] = useState("");
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
 
@@ -22,7 +20,6 @@ const PlaygroundCard = () => {
     useSpeechRecognition();
 
   useEffect(() => {
-    // Stop speech synthesis when the component is unmounted or reloaded
     return () => {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
@@ -52,17 +49,15 @@ const PlaygroundCard = () => {
     setIsRecording(true);
     setError("");
     resetTranscript();
-    setEditableTranscription(""); // Reset editable transcription
+    setEditableTranscription("");
 
-    // Start speech recognition
     SpeechRecognition.startListening({ continuous: true });
   };
 
   const stopRecording = () => {
     setIsRecording(false);
-    SpeechRecognition.stopListening(); // Stop speech recognition
+    SpeechRecognition.stopListening();
 
-    // Add temporary transcription message with a unique id
     if (editableTranscription) {
       setMessages((prev) => [
         ...prev,
@@ -74,7 +69,7 @@ const PlaygroundCard = () => {
   const speakText = (text) => {
     if (window.speechSynthesis) {
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US"; // You can change the language if needed
+      utterance.lang = "en-US";
       window.speechSynthesis.speak(utterance);
     } else {
       console.error("Speech synthesis not supported in this browser.");
@@ -88,7 +83,6 @@ const PlaygroundCard = () => {
     }
 
     try {
-      // Step 1: Detect emotion by sending the transcription to the Flask server
       const emotionRes = await fetch(
         "http://localhost:5000/emotion-detection",
         {
@@ -100,78 +94,26 @@ const PlaygroundCard = () => {
         }
       );
 
-      let detectedEmotion = "neutral"; // Default to neutral
+      let detectedEmotion = "neutral";
 
       if (emotionRes.ok) {
         const emotionData = await emotionRes.json();
-        detectedEmotion = emotionData.emotion || "neutral";
+        detectedEmotion = emotionData.emotion;
       } else {
         console.warn("Emotion API response error: Defaulting to neutral.");
       }
 
       setEmotion(detectedEmotion);
 
-      // Step 2: Send the transcription and detected emotion to the Node.js server
+      // Hide the emotion message after 4 seconds
+      setTimeout(() => {
+        setEmotion("");
+      }, 4000);
+
       const formData = new FormData();
       formData.append("transcription", editableTranscription);
       formData.append("emotion", detectedEmotion);
 
-      const typingPhrases = [
-        "Analyzing your argument...",
-        "Formulating a logical response...",
-        "Processing your thoughts...",
-        "Considering all perspectives...",
-        "Weighing the evidence...",
-        "Sifting through the data...",
-        "Exploring the nuances...",
-        "Building my counterpoint...",
-        "Calculating the optimal reply...",
-        "Assessing your reasoning...",
-        "Let me think for a moment...",
-        "Crunching the numbers...",
-        "Preparing a well-informed response...",
-        "Let me refine my thoughts...",
-        "Analyzing the pros and cons...",
-        "Gathering supporting facts...",
-        "Delving deeper into the topic...",
-        "Organizing my response...",
-        "Synthesizing the information...",
-        "Challenging your perspective...",
-        "Forming a precise reply...",
-      ];
-
-      const shuffleArray = (array) => {
-        let shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
-      };
-
-      const shuffledPhrases = shuffleArray(typingPhrases);
-
-      // Show typing effect
-      setIsTyping(true);
-      for (let i = 0; i < 3; i++) {
-        setTypingText(shuffledPhrases[i]);
-        chatContainerRef.current?.scrollTo(
-          0,
-          chatContainerRef.current.scrollHeight
-        ); // Ensure scrolling
-        await new Promise((resolve) => setTimeout(resolve, 1200));
-      }
-      setIsTyping(false);
-
-      // Update the last user message with the final transcription
-      setMessages((prev) => {
-        const updatedMessages = [...prev];
-        updatedMessages[updatedMessages.length - 1].text =
-          editableTranscription;
-        return updatedMessages;
-      });
-
-      // Fetch the AI response
       const debateRes = await fetch(
         "http://localhost:8000/api/v1/services/debate",
         {
@@ -186,14 +128,12 @@ const PlaygroundCard = () => {
       const debateData = await debateRes.json();
       const aiResponse = debateData.data.reply || "No reply available.";
 
-      // Immediately read the AI response out loud
       speakText(aiResponse);
 
-      // Simulate letter-by-letter typing for the AI response
       setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
 
       let index = 0;
-      const typingSpeed = 65; // Faster typing effect
+      const typingSpeed = 65;
       const typingInterval = setInterval(() => {
         if (index < aiResponse.length) {
           setMessages((prev) => {
@@ -207,7 +147,7 @@ const PlaygroundCard = () => {
           chatContainerRef.current?.scrollTo(
             0,
             chatContainerRef.current.scrollHeight
-          ); // Ensure scrolling
+          );
           index++;
         } else {
           clearInterval(typingInterval);
@@ -218,7 +158,6 @@ const PlaygroundCard = () => {
     } catch (err) {
       console.error("Error submitting text:", err);
       setError("Failed to submit text. Please try again later.");
-      setIsTyping(false);
     }
   };
 
@@ -236,7 +175,6 @@ const PlaygroundCard = () => {
       <h1 className="text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md">
         Vox Debate Playground
       </h1>
-
       <div
         ref={chatContainerRef}
         className={`flex-1 overflow-y-auto p-4 space-y-4 rounded-lg bg-opacity-50 shadow-inner transition-all duration-300 ease-in-out ${
@@ -261,46 +199,12 @@ const PlaygroundCard = () => {
             </div>
           </div>
         ))}
-
-        {/* Typing Effect */}
-        {isTyping && (
-          <motion.div
-            className="text-sm italic text-gray-500 transition-opacity duration-1000"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {typingText}
-          </motion.div>
-        )}
       </div>
-
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
-      {/* Emotion Display */}
       {emotion && (
-        <div
-          className={`mt-4 text-center text-xl font-semibold ${
-            emotion === "neutral"
-              ? "text-gray-500"
-              : emotion === "calm"
-              ? "text-blue-400"
-              : emotion === "happy"
-              ? "text-yellow-500"
-              : emotion === "sad"
-              ? "text-blue-500"
-              : emotion === "angry"
-              ? "text-red-500"
-              : emotion === "fear"
-              ? "text-purple-500"
-              : emotion === "disgust"
-              ? "text-green-500"
-              : emotion === "surprise"
-              ? "text-orange-500"
-              : "text-gray-700"
-          }`}
-        >
-          <p>Detected Emotion: {emotion}</p>
+        <div className="mt-4 text-center text-xl font-semibold text-green-500">
+          <p>User's emotion detected!</p>
         </div>
       )}
 

@@ -23,7 +23,7 @@ with open('tokenizer.pkl', 'rb') as f:
 maxlen = 100  # Max length of the input text sequences
 
 # Emotion labels (adjust according to your model's training)
-emotion_labels = ['Anger', 'Fear', 'Joy', 'Love', 'Sadness', 'Surprise']
+emotion_labels = ['angry', 'fear', 'happy', 'love', 'sad', 'surprised']
 
 # Preprocess the input text: tokenization, stopword removal, and punctuation handling
 def preprocess_texts(texts):
