@@ -13,6 +13,8 @@ const PlaygroundCard = () => {
   const [editableTranscription, setEditableTranscription] = useState("");
   const [emotion, setEmotion] = useState("");
   const [error, setError] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingText, setTypingText] = useState("");
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
   const [audioBlob, setAudioBlob] = useState(null); // Store the recorded audio blob
@@ -138,6 +140,61 @@ const PlaygroundCard = () => {
       debateFormData.append("transcription", editableTranscription);
       debateFormData.append("emotion", detectedEmotion);
 
+      const typingPhrases = [
+        "Analyzing your argument...",
+        "Formulating a logical response...",
+        "Processing your thoughts...",
+        "Considering all perspectives...",
+        "Weighing the evidence...",
+        "Sifting through the data...",
+        "Exploring the nuances...",
+        "Building my counterpoint...",
+        "Calculating the optimal reply...",
+        "Assessing your reasoning...",
+        "Let me think for a moment...",
+        "Crunching the numbers...",
+        "Preparing a well-informed response...",
+        "Let me refine my thoughts...",
+        "Analyzing the pros and cons...",
+        "Gathering supporting facts...",
+        "Delving deeper into the topic...",
+        "Organizing my response...",
+        "Synthesizing the information...",
+        "Challenging your perspective...",
+        "Forming a precise reply...",
+      ];
+
+      const shuffleArray = (array) => {
+        let shuffled = [...array];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return shuffled;
+      };
+
+      const shuffledPhrases = shuffleArray(typingPhrases);
+
+      // Show typing effect
+      setIsTyping(true);
+      for (let i = 0; i < 4; i++) {
+        setTypingText(shuffledPhrases[i]);
+        chatContainerRef.current?.scrollTo(
+          0,
+          chatContainerRef.current.scrollHeight
+        ); // Ensure scrolling
+        await new Promise((resolve) => setTimeout(resolve, 1200));
+      }
+      setIsTyping(false);
+
+      // Update the last user message with the final transcription
+      setMessages((prev) => {
+        const updatedMessages = [...prev];
+        updatedMessages[updatedMessages.length - 1].text =
+          editableTranscription;
+        return updatedMessages;
+      });
+
       const debateRes = await fetch(
         "http://localhost:8000/api/v1/services/debate",
         {
@@ -183,6 +240,7 @@ const PlaygroundCard = () => {
     } catch (err) {
       console.error("Error submitting text:", err);
       setError("Failed to submit text. Please try again later.");
+      setIsTyping(false);
     }
   };
 
@@ -224,6 +282,18 @@ const PlaygroundCard = () => {
             </div>
           </div>
         ))}
+
+        {/* Typing Effect */}
+        {isTyping && (
+          <motion.div
+            className="text-sm italic text-gray-500 transition-opacity duration-1000"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {typingText}
+          </motion.div>
+        )}
       </div>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
