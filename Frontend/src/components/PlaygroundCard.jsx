@@ -15,6 +15,7 @@ const PlaygroundCard = () => {
   const [error, setError] = useState("");
   const theme = useSelector((state) => state.theme.theme);
   const chatContainerRef = useRef(null);
+  const [audioBlob, setAudioBlob] = useState(null); // Store the recorded audio blob
 
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
@@ -52,6 +53,27 @@ const PlaygroundCard = () => {
     setEditableTranscription("");
 
     SpeechRecognition.startListening({ continuous: true });
+
+    // Start capturing the audio as well
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const chunks = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+      chunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "audio/wav" });
+      setAudioBlob(blob); // Store the recorded audio blob
+    };
+
+    mediaRecorder.start();
+
+    // Stop recording after a certain time (optional)
+    setTimeout(() => {
+      mediaRecorder.stop();
+    }, 10000); // Record for 10 seconds (you can adjust the time)
   };
 
   const stopRecording = () => {
@@ -77,28 +99,29 @@ const PlaygroundCard = () => {
   };
 
   const handleUpload = async () => {
-    if (!editableTranscription) {
-      setError("Please provide some text before submitting.");
+    if (!editableTranscription || !audioBlob) {
+      setError("Please provide some text and speak before submitting.");
       return;
     }
 
+    // 1. Call Emotion Detection API
+    const formData = new FormData();
+    formData.append("file", audioBlob, "userAudio.wav"); // Send audio blob
+
     try {
       const emotionRes = await fetch(
-        "http://localhost:5000/emotion-detection",
+        "http://localhost:8000/api/v1/services/emotion-detection",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ transcription: editableTranscription }),
+          body: formData,
+          credentials: "include", // Ensure cookies are sent if necessary
         }
       );
 
       let detectedEmotion = "neutral";
-
       if (emotionRes.ok) {
         const emotionData = await emotionRes.json();
-        detectedEmotion = emotionData.emotion;
+        detectedEmotion = emotionData.data.emotion;
       } else {
         console.warn("Emotion API response error: Defaulting to neutral.");
       }
@@ -110,16 +133,17 @@ const PlaygroundCard = () => {
         setEmotion("");
       }, 4000);
 
-      const formData = new FormData();
-      formData.append("transcription", editableTranscription);
-      formData.append("emotion", detectedEmotion);
+      // 2. Call Debate Service API after Emotion is detected
+      const debateFormData = new FormData();
+      debateFormData.append("transcription", editableTranscription);
+      debateFormData.append("emotion", detectedEmotion);
 
       const debateRes = await fetch(
         "http://localhost:8000/api/v1/services/debate",
         {
           method: "POST",
-          body: formData,
-          credentials: "include",
+          body: debateFormData,
+          credentials: "include", // Ensure cookies are sent if necessary
         }
       );
 
@@ -128,6 +152,7 @@ const PlaygroundCard = () => {
       const debateData = await debateRes.json();
       const aiResponse = debateData.data.reply || "No reply available.";
 
+      // 3. Speak AI response
       speakText(aiResponse);
 
       setMessages((prev) => [...prev, { sender: "AI", text: "" }]);
@@ -154,7 +179,7 @@ const PlaygroundCard = () => {
         }
       }, typingSpeed);
 
-      setEditableTranscription("");
+      setEditableTranscription(""); // Reset transcription
     } catch (err) {
       console.error("Error submitting text:", err);
       setError("Failed to submit text. Please try again later.");
@@ -195,7 +220,7 @@ const PlaygroundCard = () => {
                   : "bg-gradient-to-br from-gray-300 to-gray-400 text-black"
               }`}
             >
-              {msg.text}
+              {msg.text} {/* Render the message text */}
             </div>
           </div>
         ))}
@@ -204,7 +229,7 @@ const PlaygroundCard = () => {
 
       {emotion && (
         <div className="mt-4 text-center text-xl font-semibold text-green-500">
-          <p>User's emotion detected!</p>
+          <p>User's emotion detected: {emotion}</p>
         </div>
       )}
 
