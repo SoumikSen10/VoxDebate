@@ -160,6 +160,15 @@ const emotionDetectionService = asyncHandler(async (req, res) => {
     // Detect emotion from the provided audio file
     const emotion = await detectEmotion(audioFile.path);
 
+    // Delete the audio file after emotion detection
+    fs.unlink(audioFile.path, (err) => {
+      if (err) {
+        console.error("Error deleting audio file:", err);
+      } else {
+        console.log("Audio file deleted successfully");
+      }
+    });
+
     return res
       .status(200)
       .json(new ApiResponse(200, { emotion }, "Emotion detected successfully"));
