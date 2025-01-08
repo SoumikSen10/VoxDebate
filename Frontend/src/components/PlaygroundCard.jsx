@@ -90,17 +90,6 @@ const PlaygroundCard = () => {
     setIsRecording(false);
     SpeechRecognition.stopListening();
 
-    if (editableTranscription) {
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now(), sender: "User", text: editableTranscription },
-      ]);
-    }
-
-    if (!audioBlob) {
-      return;
-    }
-
     setError("");
   };
 
@@ -118,6 +107,12 @@ const PlaygroundCard = () => {
     if (!editableTranscription || !audioBlob) {
       return;
     }
+
+    // Add the edited transcription to the messages state
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now(), sender: "User", text: editableTranscription },
+    ]);
 
     setIsUploading(true);
     setError("");
@@ -158,7 +153,25 @@ const PlaygroundCard = () => {
         "Analyzing your argument...",
         "Formulating a logical response...",
         "Processing your thoughts...",
+        "Evaluating your perspective...",
+        "Constructing a coherent reply...",
+        "Synthesizing relevant points...",
+        "Reflecting on your input...",
+        "Considering counterarguments...",
+        "Weighing possible responses...",
+        "Delving into your reasoning...",
+        "Breaking down key ideas...",
+        "Exploring your argument in depth...",
+        "Thinking critically about your points...",
+        "Organizing a thoughtful response...",
+        "Drafting a reply tailored to your input...",
+        "Carefully reviewing your statement...",
+        "Assessing the nuances of your message...",
+        "Generating an appropriate rebuttal...",
+        "Examining your argument holistically...",
+        "Preparing a detailed response...",
       ];
+
       for (let phrase of typingPhrases) {
         setTypingText(phrase);
         chatContainerRef.current?.scrollTo(
@@ -224,55 +237,60 @@ const PlaygroundCard = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`w-full max-w-[900px] h-[85vh] flex flex-col rounded-2xl shadow-2xl mx-auto p-4 space-y-4 sm:p-8 ${
+      className={`w-full max-w-[900px] h-auto min-h-[85vh] flex flex-col rounded-3xl shadow-2xl mx-auto p-4 space-y-4 sm:p-8 ${
         theme === "dark"
-          ? "bg-gradient-to-br from-[#1e1e2f] to-[#29293d] text-white"
-          : "bg-gradient-to-br from-gray-100 to-white text-black"
-      } lg:mx-auto sm:w-[95%]`}
+          ? "bg-gradient-to-br from-[#18181b] to-[#1f1f25] text-white"
+          : "bg-gradient-to-br from-white to-gray-100 text-gray-800"
+      } overflow-visible`}
     >
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="text-4xl font-bold text-center mb-6 text-orange-500 drop-shadow-md"
+        className="text-5xl font-extrabold text-center mb-6 leading-tight bg-gradient-to-r from-orange-400 to-pink-500 text-transparent bg-clip-text drop-shadow-md"
       >
         Vox Debate Playground
       </motion.h1>
       <motion.div
         ref={chatContainerRef}
-        className={`flex-1 overflow-y-auto p-4 space-y-4 rounded-lg shadow-inner ${
-          theme === "dark" ? "bg-[#2e2e3e]" : "bg-gray-200"
-        } lg:w-full sm:mx-auto`}
+        className={`flex-1 overflow-y-auto p-6 space-y-4 rounded-2xl shadow-inner ${
+          theme === "dark" ? "bg-[#202024]" : "bg-gray-50"
+        } lg:w-full sm:mx-auto border ${
+          theme === "dark" ? "border-[#2e2e3e]" : "border-gray-200"
+        }`}
       >
         {messages.map((msg, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}
             className={`flex ${
               msg.sender === "User" ? "justify-end" : "justify-start"
             }`}
           >
             <div
-              className={`max-w-[75%] p-4 rounded-xl shadow ${
+              className={`max-w-[75%] p-4 rounded-2xl shadow-md ${
                 msg.sender === "User"
-                  ? "bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 text-white"
-                  : "bg-gradient-to-r from-gray-400 via-gray-300 to-gray-200 text-black"
+                  ? "bg-gradient-to-r from-indigo-400 to-blue-500 text-white"
+                  : "bg-gradient-to-r from-gray-300 to-gray-200 text-gray-900"
               }`}
             >
-              {msg.text}
+              <p className="text-sm">{msg.text}</p>
             </div>
           </motion.div>
         ))}
 
         {isTyping && (
           <motion.div
-            className="text-sm italic text-gray-500"
+            className="text-sm italic text-gray-400 flex items-center space-x-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {typingText}
+            <div className="animate-pulse w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="animate-pulse w-2 h-2 bg-gray-400 rounded-full"></div>
+            <div className="animate-pulse w-2 h-2 bg-gray-400 rounded-full"></div>
+            <span>{typingText}</span>
           </motion.div>
         )}
       </motion.div>
@@ -283,7 +301,7 @@ const PlaygroundCard = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="mt-4 text-center text-xl font-semibold text-green-500"
+          className="mt-4 text-center text-xl font-semibold text-green-400"
         >
           User's emotion detected: {emotion}
         </motion.div>
@@ -292,7 +310,7 @@ const PlaygroundCard = () => {
       <div className="flex items-center space-x-4 mt-6">
         <Button
           onClick={isRecording ? stopRecording : startRecording}
-          className="flex-shrink-0 p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-lg transition-transform transform hover:scale-105"
+          className="flex-shrink-0 p-4 bg-gradient-to-br from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white rounded-full shadow-lg transition-transform transform hover:scale-110"
         >
           {isRecording ? <FaStop /> : <FaMicrophoneAlt />}
         </Button>
@@ -300,21 +318,21 @@ const PlaygroundCard = () => {
         <textarea
           value={editableTranscription}
           onChange={(e) => setEditableTranscription(e.target.value)}
-          className={`flex-grow p-4 rounded-md resize-none shadow-md border-2 focus:outline-none transition-transform sm:w-[90%] sm:ml-2 md:w-[85%] lg:w-[80%] xl:w-[75%] 2xl:w-[70%] ${
+          className={`flex-grow p-4 rounded-xl resize-none shadow-md border-2 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-transform ${
             theme === "dark"
-              ? "bg-[#2b2b3d] text-white placeholder-gray-400 border-[#3c3c4d]"
-              : "bg-gray-100 text-black placeholder-gray-600 border-gray-300"
-          } `}
+              ? "bg-[#1f1f25] text-white placeholder-gray-400 border-[#2e2e3e]"
+              : "bg-gray-50 text-gray-900 placeholder-gray-500 border-gray-300"
+          }`}
           placeholder="Type or speak your message..."
           rows={3}
         />
 
         <Button
           onClick={handleUpload}
-          className={`flex-shrink-0 p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg ${
-            isUploading ? "cursor-not-allowed" : ""
+          className={`flex-shrink-0 p-4 bg-gradient-to-br from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 text-white rounded-full shadow-lg transition-transform transform hover:scale-110 ${
+            isUploading ? "cursor-not-allowed opacity-70" : ""
           }`}
-          disabled={isRecordingInProgress}
+          disabled={isRecordingInProgress || isUploading}
         >
           {isUploading ? (
             <FaSpinner className="animate-spin" />
